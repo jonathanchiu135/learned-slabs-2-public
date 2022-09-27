@@ -14,7 +14,7 @@ public class CacheSimulatorDynamic {
     public static int LINES_READ_PER_CHUNK = 5400;
     public static String traceLink = "./traces/hit-count-test-trace.txt";
     public static String allocationLink = "./results/hit-count-test-alloc.txt";
-    
+            
 
     public int hits;
     public int requests;
@@ -215,9 +215,10 @@ public class CacheSimulatorDynamic {
     public static void main(String[] args){  
         System.out.println("Initializing cache and counting hits!");  
 
-        CacheDynamic currCache = new CacheDynamic();
-        currCache.calculateHitRate();
-        currCache.printResults();
+        // remmeber to redo
+        // CacheDynamic currCache = new CacheDynamic();
+        // currCache.calculateHitRate();
+        // currCache.printResults();
     }
 
 }

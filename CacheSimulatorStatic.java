@@ -165,6 +165,7 @@ public class CacheSimulatorStatic {
     public static void main(String[] args){  
         System.out.println("Initializing cache and counting hits!");  
 
+        // going to need to make sure this all works + redo btw
         // CacheStatic currCache = new CacheStatic();
         // currCache.calculateHitRate();
         // currCache.printResults();
