@@ -8,7 +8,7 @@ import java.security.spec.ECFieldF2m;
 
 public class AllocCostBenefit {
 
-    public class TraceLine {
+    public static class TraceLine {
         // static variables
         static byte[] id_buff = new byte[8];
         static byte[] size_buff = new byte[4];
@@ -20,12 +20,25 @@ public class AllocCostBenefit {
         int size;
         long next_time;
 
-
         // constructor: parse numbers from whatever is stored in static arrs
         public TraceLine() {
-            this.id = ByteBuffer.wrap(id_buff).getLong();
-            this.size = ByteBuffer.wrap(size_buff).getInt();
-            this.next_time = ByteBuffer.wrap(next_time_buff).getLong();
+            ByteBuffer bb;
+
+            bb = ByteBuffer.wrap(id_buff);
+            bb.order( ByteOrder.LITTLE_ENDIAN );
+            this.id = bb.getLong();
+
+            bb = ByteBuffer.wrap(size_buff);
+            bb.order( ByteOrder.LITTLE_ENDIAN );
+            this.size = bb.getInt();
+
+            bb = ByteBuffer.wrap(next_time_buff);
+            bb.order( ByteOrder.LITTLE_ENDIAN );
+            this.next_time = bb.getLong();
+        
+            // this.id = ByteBuffer.wrap(id_buff).getLong();
+            // this.size = ByteBuffer.wrap(size_buff).getInt();
+            // this.next_time = ByteBuffer.wrap(next_time_buff).getLong();
         }
 
         // constructor: manually parse line from values and set here
@@ -70,7 +83,7 @@ public class AllocCostBenefit {
             SLAB_COUNTS_MAP.put(524288, 1);
             SLAB_COUNTS_MAP.put(1048576, 1);
         }
-    public static int LINES_READ_PER_CHUNK = 5400;
+    public static int LINES_READ_PER_CHUNK = 540000;
     static int SLAB_SIZE = 1048576;
 
     // class variables
@@ -90,9 +103,9 @@ public class AllocCostBenefit {
     // constructor
     public AllocCostBenefit(String traceLink, String resultLink) {
         // class variables
-        this.t = 0;
+        this.t = 1;
         this.traceLink = traceLink;
-        this.numLines = new File(this.traceLink).length();
+        this.numLines = new File(this.traceLink).length() / 24;
         this.resultLink = resultLink;
         this.idToClosestTime = new HashMap<Integer, Long>();
         try {
@@ -147,7 +160,6 @@ public class AllocCostBenefit {
         if (this.reader.read(TraceLine.id_buff) == -1) return null;
         if (this.reader.read(TraceLine.size_buff) == -1) return null;
         if (this.reader.read(TraceLine.next_time_buff) == -1) return null;
-        this.t++;
         return new TraceLine();
     }
 
@@ -169,6 +181,16 @@ public class AllocCostBenefit {
         this.cacheUsedSpace.put(sc, this.cacheUsedSpace.get(sc) + line.size);
         slabClassLRU.put(line.id, new CacheItem(line.size, line.next_time));
     }
+    
+
+    // move least used -> to most used (if 0 just pick random)
+    // just move one at a time 
+    // either more often / move more slabs at once if it's not making a difference
+    // play around with lines between recalculations
+
+    // just use hitrate for performance (don't scale by size)
+    // 
+
 
     public void processLine(TraceLine line) {
         // if the item isn't going to fit in any slab class, just ignore it
@@ -183,30 +205,33 @@ public class AllocCostBenefit {
         }
         this.addToCache(sc, line);
     }
-
+    /*
+        Cost: indicator for if item accessed again
+        Benefit: amount of space "freed up" by moving slab away
+        Low C/B => more likely to move away 
+    */
     public void collectStats() {
         try {
             for (int sc : SLAB_CLASSES) {
                 LinkedHashMap<Long, CacheItem> slabClassState = this.cacheLRU.get(sc);
-                int numNeverAccessed = 0;
-                int totalBenefit = 0;
                 Iterator<Map.Entry<Long, CacheItem>> it = slabClassState.entrySet().iterator();
 
+                float total_ratio = 0;
                 while (it.hasNext()) {
                     CacheItem item = it.next().getValue();
 
-                    // calculate the cost
-                    if (item.next_time == -1) numNeverAccessed++;
-
-                    // calculate the benefit (if it exists)
-                    if (item.next_time > 0) {
-                        totalBenefit += (item.next_time - this.t) * sc;
-                    } else {
-                        totalBenefit += (this.numLines - this.t) * sc;
+                    // since cost is in the numerator, if never accessed again, C/B = 0; just don't add
+                    if (item.next_time != -1) {
+                        // divide by B
+                        long time_btw_access = (item.next_time == -1 ? this.numLines : item.next_time) - this.t;
+                        total_ratio += (float) ((10000000000.0 / time_btw_access) / sc);
                     }
                 }
+                String s = String.format("sc:%d/total_ratio:%f\n", sc, total_ratio);
+                // String s = String.format("sc:%d/cost:%d/benefit:%d/ratio:%f\n", sc, numAccessedAgain, totalBenefit, (float) numAccessedAgain / totalBenefit);
 
-                String s = String.format("cost:%d/benefit:%d/ratio:%f\n", numNeverAccessed, totalBenefit, (float) numNeverAccessed / totalBenefit);
+
+
                 this.writer.write(s);
             }
             this.writer.write("\n");
@@ -219,18 +244,19 @@ public class AllocCostBenefit {
     public void processTrace() throws IOException {
         TraceLine line;
         while((line = this.readTraceLine()) != null) {
-            System.out.printf("%d %d %d\n", line.id, line.next_time, line.size);
+            // System.out.printf("%d %d %d\n", line.id, line.next_time, line.size);
             if (this.t % LINES_READ_PER_CHUNK == 0) {
                 this.collectStats();
             }
             this.processLine(line);
             this.t++;
         }
-        reader.close();
+        this.writer.close();
+        this.reader.close();
     }
 
     public static void main(String[] args) throws Exception {
-        AllocCostBenefit alloc = new AllocCostBenefit("./traces/binTrace", "./results/test-alloc.txt");
+        AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/jason/cphy/w03.oracleGeneral.bin", "./results/w03.cost-benefit.txt");
         alloc.processTrace();
     }
 }
