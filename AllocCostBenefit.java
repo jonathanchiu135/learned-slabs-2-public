@@ -173,13 +173,12 @@ public class AllocCostBenefit {
     }
     
 
-    // move least used -> to most used (if multiple 0 just pick random)
-    // just move one at a time 
-    // either more often / move more slabs at once if it's not making a difference
-    // play around with lines between recalculations
+    // move least used -> to most used
+    // to readjust (if not making a difference):
+    //  either move more often / move more slabs at once
+    //  play around with lines between recalculations
 
-    // just use hitrate for performance (don't scale by size)
-    // 
+    // just use purely hitrate to judge performance (don't scale by size)
 
 
     public void processLine(TraceLine line) {
@@ -215,8 +214,6 @@ public class AllocCostBenefit {
                     total_ratio += (float) ((10000000000.0 / time_btw_access) / sc);
                 }
             }
-            // String s = String.format("sc:%d/total_ratio:%f\n", sc, total_ratio);
-            // this.writer.write(s);
             scToCB.put(sc, total_ratio);
         }
         return scToCB;
