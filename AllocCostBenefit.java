@@ -4,7 +4,6 @@
 import java.util.*;
 import java.io.*;
 import java.nio.*;
-import java.security.spec.ECFieldF2m;
 
 public class AllocCostBenefit {
 
@@ -62,27 +61,6 @@ public class AllocCostBenefit {
     // static variables: are 15 slab classes
     public static int[] SLAB_CLASSES = { 64, 128, 256, 512, 1024, 2048, 4096, 8192, 
         16384, 32768, 65536, 131072, 262144, 524288, 1048576};
-    public static int[] SLAB_COUNTS = { 16, 8, 8, 4, 4, 3, 3, 
-        2, 2, 2, 1, 1, 1, 1, 1 }; // arbitrarily assign initial slab counts
-    public static Map<Integer, Integer> SLAB_COUNTS_MAP;
-        static {
-            SLAB_COUNTS_MAP = new HashMap<>();
-            SLAB_COUNTS_MAP.put(64, 16);
-            SLAB_COUNTS_MAP.put(128, 8);
-            SLAB_COUNTS_MAP.put(256, 8);
-            SLAB_COUNTS_MAP.put(512, 4);
-            SLAB_COUNTS_MAP.put(1024, 4);
-            SLAB_COUNTS_MAP.put(2048, 3);
-            SLAB_COUNTS_MAP.put(4096, 3);
-            SLAB_COUNTS_MAP.put(8192, 2);
-            SLAB_COUNTS_MAP.put(16384, 2);
-            SLAB_COUNTS_MAP.put(32768, 2);
-            SLAB_COUNTS_MAP.put(65536, 1);
-            SLAB_COUNTS_MAP.put(131072, 1);
-            SLAB_COUNTS_MAP.put(262144, 1);
-            SLAB_COUNTS_MAP.put(524288, 1);
-            SLAB_COUNTS_MAP.put(1048576, 1);
-        }
     public static int LINES_READ_PER_CHUNK = 540000;
     static int SLAB_SIZE = 1048576;
 
@@ -99,6 +77,9 @@ public class AllocCostBenefit {
     // cache variables
     public HashMap<Integer, Integer> cacheUsedSpace;                    // maps sc to how much space used
     public HashMap<Integer, LinkedHashMap<Long, CacheItem>> cacheLRU;   // maps sc to LRU list
+    public HashMap<Integer, Integer> SLAB_COUNTS_MAP;
+    public int epochhits;
+    public int lifetimehits;
 
     // constructor
     public AllocCostBenefit(String traceLink, String resultLink) {
@@ -114,23 +95,32 @@ public class AllocCostBenefit {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        this.SLAB_COUNTS_MAP = new HashMap<>();
+        this.SLAB_COUNTS_MAP.put(64, 16);
+        this.SLAB_COUNTS_MAP.put(128, 8);
+        this.SLAB_COUNTS_MAP.put(256, 8);
+        this.SLAB_COUNTS_MAP.put(512, 4);
+        this.SLAB_COUNTS_MAP.put(1024, 4);
+        this.SLAB_COUNTS_MAP.put(2048, 3);
+        this.SLAB_COUNTS_MAP.put(4096, 3);
+        this.SLAB_COUNTS_MAP.put(8192, 2);
+        this.SLAB_COUNTS_MAP.put(16384, 2);
+        this.SLAB_COUNTS_MAP.put(32768, 2);
+        this.SLAB_COUNTS_MAP.put(65536, 1);
+        this.SLAB_COUNTS_MAP.put(131072, 1);
+        this.SLAB_COUNTS_MAP.put(262144, 1);
+        this.SLAB_COUNTS_MAP.put(524288, 1);
+        this.SLAB_COUNTS_MAP.put(1048576, 1);
 
         // cache variables
         this.cacheUsedSpace = new HashMap<>();
         this.cacheLRU = new HashMap<>();
         for (int sc : SLAB_CLASSES) {
             this.cacheUsedSpace.put(sc, 0);
-            this.cacheLRU.put(sc, new LinkedHashMap<Long, CacheItem>() {
-                // protected boolean removeEldestEntry(Map.Entry<Long, CacheItem> eldest) {
-                //     if (cacheUsedSpace.get(sc) > SLAB_SIZE * SLAB_COUNTS_MAP.get(sc)) {
-                //         cacheUsedSpace.put(sc, cacheUsedSpace.get(sc) - eldest.getValue().size);
-                //         return true;
-                //     } else {
-                //         return false;
-                //     }
-                // }
-            });
+            this.cacheLRU.put(sc, new LinkedHashMap<Long, CacheItem>());
         }
+        this.epochhits = 0;
+        this.lifetimehits = 0;
     }
 
     // static methods
@@ -183,7 +173,7 @@ public class AllocCostBenefit {
     }
     
 
-    // move least used -> to most used (if 0 just pick random)
+    // move least used -> to most used (if multiple 0 just pick random)
     // just move one at a time 
     // either more often / move more slabs at once if it's not making a difference
     // play around with lines between recalculations
@@ -201,10 +191,51 @@ public class AllocCostBenefit {
         CacheItem oldItem = this.cacheLRU.get(sc).get(line.id);
         if (oldItem != null) {
             // assumes that objects cannot change sc
+            this.lifetimehits++;
+            this.epochhits++;
             this.removeFromCache(sc, line.id, oldItem);
         }
         this.addToCache(sc, line);
     }
+
+    public Map<Integer, Float> computeCBPerSlab() {
+        Map<Integer, Float> scToCB = new HashMap<>();
+        for (int sc : SLAB_CLASSES) {
+            LinkedHashMap<Long, CacheItem> slabClassState = this.cacheLRU.get(sc);
+            Iterator<Map.Entry<Long, CacheItem>> it = slabClassState.entrySet().iterator();
+            float total_ratio = 0;
+            while (it.hasNext()) {
+                CacheItem item = it.next().getValue();
+
+                // since cost is in the numerator, if never accessed again, C/B = 0; just don't add
+                // add C/B per item (instead of accumulating all, then calculating C/B)
+                if (item.next_time != -1) {
+                    // divide by B
+                    long time_btw_access = (item.next_time == -1 ? this.numLines : item.next_time) - this.t;
+                    total_ratio += (float) ((10000000000.0 / time_btw_access) / sc);
+                }
+            }
+            // String s = String.format("sc:%d/total_ratio:%f\n", sc, total_ratio);
+            // this.writer.write(s);
+            scToCB.put(sc, total_ratio);
+        }
+        return scToCB;
+    }
+
+    public void moveSlab(int min, int max) {
+        // drop items from the LRU until have enough space to remove a slab 
+        LinkedHashMap<Long, CacheItem> slabClassLRU = this.cacheLRU.get(min);
+        Iterator<Long> it = slabClassLRU.keySet().iterator();
+        while (this.SLAB_COUNTS_MAP.get(min) * SLAB_SIZE - this.cacheUsedSpace.get(min) < SLAB_SIZE) {
+            Long removeItemId = it.next();
+            this.cacheUsedSpace.put(min, this.cacheUsedSpace.get(min) - slabClassLRU.get(removeItemId).size);
+            it.remove();
+        }
+
+        this.SLAB_COUNTS_MAP.put(max, this.SLAB_COUNTS_MAP.get(max) + 1);
+        this.SLAB_COUNTS_MAP.put(min, this.SLAB_COUNTS_MAP.get(min) - 1);
+    }
+
     /*
         Cost: indicator for if item accessed again
         Benefit: amount of space "freed up" by moving slab away
@@ -212,29 +243,35 @@ public class AllocCostBenefit {
     */
     public void collectStats() {
         try {
+            // re-alloc the slabs based on cb analysis
+            Map<Integer, Float> scToCB = computeCBPerSlab();
+
+            // calculate the min SC (where the SLAB_COUNTS is still > 0) and max SC
+            int min = -1;
+            int max = -1;
+            float maxCB = 0;
+            float minCB = Float.MAX_VALUE;
             for (int sc : SLAB_CLASSES) {
-                LinkedHashMap<Long, CacheItem> slabClassState = this.cacheLRU.get(sc);
-                Iterator<Map.Entry<Long, CacheItem>> it = slabClassState.entrySet().iterator();
-
-                float total_ratio = 0;
-                while (it.hasNext()) {
-                    CacheItem item = it.next().getValue();
-
-                    // since cost is in the numerator, if never accessed again, C/B = 0; just don't add
-                    if (item.next_time != -1) {
-                        // divide by B
-                        long time_btw_access = (item.next_time == -1 ? this.numLines : item.next_time) - this.t;
-                        total_ratio += (float) ((10000000000.0 / time_btw_access) / sc);
-                    }
+                if (scToCB.get(sc) >= maxCB) {
+                    max = sc;
+                    maxCB = scToCB.get(sc);
+                } 
+                if (scToCB.get(sc) <= minCB && this.SLAB_COUNTS_MAP.get(sc) > 0) {
+                    min = sc;
+                    minCB = scToCB.get(sc);
                 }
-                String s = String.format("sc:%d/total_ratio:%f\n", sc, total_ratio);
-                // String s = String.format("sc:%d/cost:%d/benefit:%d/ratio:%f\n", sc, numAccessedAgain, totalBenefit, (float) numAccessedAgain / totalBenefit);
-
-
-
-                this.writer.write(s);
             }
-            this.writer.write("\n");
+
+            // move a slab from min to max slab class
+            if (min != -1) moveSlab(min, max);
+
+            // write the hit rate over the last epoch to file
+            this.writer.write(String.format("moved slab from %d to %d\n", min, max));
+            this.writer.write("cost/benefits: " + scToCB.toString() + "\n");
+            this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
+            this.writer.write(String.format("epoch hits: %d\n", this.epochhits));
+            this.writer.write(String.format("lifetime hits: %d\n", this.lifetimehits));    
+            this.epochhits = 0;
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("error collecting stats");
@@ -244,7 +281,6 @@ public class AllocCostBenefit {
     public void processTrace() throws IOException {
         TraceLine line;
         while((line = this.readTraceLine()) != null) {
-            // System.out.printf("%d %d %d\n", line.id, line.next_time, line.size);
             if (this.t % LINES_READ_PER_CHUNK == 0) {
                 this.collectStats();
             }
@@ -256,8 +292,8 @@ public class AllocCostBenefit {
     }
 
     public static void main(String[] args) throws Exception {
-        AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/jason/cphy/w03.oracleGeneral.bin", "./results/w03.cost-benefit.txt");
-        alloc.processTrace();
+        // AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/jason/cphy/w03.oracleGeneral.bin", "./results/w03.cost-benefit.txt");
+        // alloc.processTrace();
     }
 }
 
