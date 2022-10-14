@@ -14,7 +14,6 @@ public class AllocCostBenefit {
         static byte[] next_time_buff = new byte[8];
     
         // class variables
-        int real_time;
         long id;
         int size;
         long next_time;
@@ -69,15 +68,14 @@ public class AllocCostBenefit {
     long numLines;
     String traceLink;
     String resultLink;
-    HashMap<Integer, Long> idToClosestTime;
+    HashMap<Integer, Integer> SLAB_COUNTS_MAP;
     BufferedInputStream reader;
     BufferedWriter writer;
     
  
     // cache variables
-    public HashMap<Integer, Integer> cacheUsedSpace;                    // maps sc to how much space used
+    public HashMap<Integer, Integer> cacheUsedSpace;                    // maps sc to how much total space in sc
     public HashMap<Integer, LinkedHashMap<Long, CacheItem>> cacheLRU;   // maps sc to LRU list
-    public HashMap<Integer, Integer> SLAB_COUNTS_MAP;
     public int epochhits;
     public int lifetimehits;
 
@@ -88,13 +86,26 @@ public class AllocCostBenefit {
         this.traceLink = traceLink;
         this.numLines = new File(this.traceLink).length() / 24;
         this.resultLink = resultLink;
-        this.idToClosestTime = new HashMap<Integer, Long>();
+
+        // init readers and writers
         try {
             this.reader = new BufferedInputStream(new FileInputStream(new File(this.traceLink)));
             this.writer = new BufferedWriter(new FileWriter(this.resultLink));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // cache variables
+        this.cacheUsedSpace = new HashMap<>();
+        this.cacheLRU = new HashMap<>();
+        for (int sc : SLAB_CLASSES) {
+            this.cacheUsedSpace.put(sc, 0);
+            this.cacheLRU.put(sc, new LinkedHashMap<Long, CacheItem>());
+        }
+        this.epochhits = 0;
+        this.lifetimehits = 0;
+
+        // set initial slab counts
         this.SLAB_COUNTS_MAP = new HashMap<>();
         this.SLAB_COUNTS_MAP.put(64, 16);
         this.SLAB_COUNTS_MAP.put(128, 8);
@@ -111,16 +122,6 @@ public class AllocCostBenefit {
         this.SLAB_COUNTS_MAP.put(262144, 1);
         this.SLAB_COUNTS_MAP.put(524288, 1);
         this.SLAB_COUNTS_MAP.put(1048576, 1);
-
-        // cache variables
-        this.cacheUsedSpace = new HashMap<>();
-        this.cacheLRU = new HashMap<>();
-        for (int sc : SLAB_CLASSES) {
-            this.cacheUsedSpace.put(sc, 0);
-            this.cacheLRU.put(sc, new LinkedHashMap<Long, CacheItem>());
-        }
-        this.epochhits = 0;
-        this.lifetimehits = 0;
     }
 
     // static methods
@@ -136,9 +137,8 @@ public class AllocCostBenefit {
             } else {
                 low = mid + 1;
             }
-        }
-        return SLAB_CLASSES[low];
-        
+        }       
+        return low < SLAB_CLASSES.length ? SLAB_CLASSES[low] : SLAB_CLASSES[SLAB_CLASSES.length - 1];
     }
 
     // class methods
@@ -161,9 +161,12 @@ public class AllocCostBenefit {
 
     public void addToCache(int sc, TraceLine line) {
         // remove until there is enough space in the sc
+        if (line.size > this.SLAB_COUNTS_MAP.get(sc) * SLAB_SIZE) {
+            return;
+        }
         LinkedHashMap<Long, CacheItem> slabClassLRU = this.cacheLRU.get(sc);
         Iterator<Long> it = slabClassLRU.keySet().iterator();
-        while (this.cacheUsedSpace.get(sc) + line.size > SLAB_COUNTS_MAP.get(sc) * SLAB_SIZE) {
+        while (this.cacheUsedSpace.get(sc) + line.size > this.SLAB_COUNTS_MAP.get(sc) * SLAB_SIZE) {
             Long removeItemId = it.next();
             this.cacheUsedSpace.put(sc, this.cacheUsedSpace.get(sc) - slabClassLRU.get(removeItemId).size);
             it.remove();
@@ -177,6 +180,7 @@ public class AllocCostBenefit {
     // to readjust (if not making a difference):
     //  either move more often / move more slabs at once
     //  play around with lines between recalculations
+    //  test using a threshhold for moving (instead of always moving)
 
     // just use purely hitrate to judge performance (don't scale by size)
 
@@ -189,7 +193,7 @@ public class AllocCostBenefit {
         int sc = getSlabClass(line.size);
         CacheItem oldItem = this.cacheLRU.get(sc).get(line.id);
         if (oldItem != null) {
-            // assumes that objects cannot change sc
+            // assumes that objects cannot change sc (if does, will still count as hit)
             this.lifetimehits++;
             this.epochhits++;
             this.removeFromCache(sc, line.id, oldItem);
@@ -260,14 +264,16 @@ public class AllocCostBenefit {
             }
 
             // move a slab from min to max slab class
-            if (min != -1) moveSlab(min, max);
+            if (min != -1 && min != max) moveSlab(min, max);
 
             // write the hit rate over the last epoch to file
+            this.writer.write("epoch #" + String.valueOf(this.t / LINES_READ_PER_CHUNK) + "\n");
             this.writer.write(String.format("moved slab from %d to %d\n", min, max));
-            this.writer.write("cost/benefits: " + scToCB.toString() + "\n");
+            this.writer.write("cost / benefits: " + scToCB.toString() + "\n");
             this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
-            this.writer.write(String.format("epoch hits: %d\n", this.epochhits));
-            this.writer.write(String.format("lifetime hits: %d\n", this.lifetimehits));    
+            this.writer.write(String.format("epoch hits: %d / %d = %f\n", this.epochhits, this.t, (float) this.epochhits / (float) this.t));
+            this.writer.write(String.format("lifetime hits: %d / %d = %f\n", this.lifetimehits, this.t, (float) this.lifetimehits / (float) this.t));    
+            this.writer.write("\n");
             this.epochhits = 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -289,8 +295,8 @@ public class AllocCostBenefit {
     }
 
     public static void main(String[] args) throws Exception {
-        // AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/jason/cphy/w03.oracleGeneral.bin", "./results/w03.cost-benefit.txt");
-        // alloc.processTrace();
+        AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/jason/cphy/w05.oracleGeneral.bin", "./results/w05.cost-benefit.txt");
+        alloc.processTrace();
     }
 }
 
