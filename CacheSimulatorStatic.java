@@ -158,10 +158,10 @@ public class CacheSimulatorStatic {
         }
         // write the results
         try {
-            this.writer.write("epoch #" + String.valueOf(this.requests / LINES_READ_PER_CHUNK) + "\n");
-            this.writer.write(util.toString() + "\n");
-            this.writer.write(String.format("epoch hitrate: %d / %d = %f\n", this.epochhits, this.requests, (float) this.epochhits / (float) this.requests));
-            this.writer.write(String.format("overall hitrate: %d / %d = %f\n", this.hits, this.requests, (float) this.hits / (float) this.requests));
+            this.writer.write("epoch " + String.valueOf(this.requests / LINES_READ_PER_CHUNK) + "\n");
+            // this.writer.write(util.toString() + "\n");
+            this.writer.write(String.format("epoch hitrate: %f\n", (float) this.epochhits / (float) LINES_READ_PER_CHUNK));
+            this.writer.write(String.format("lifetime hitrate: %f\n", (float) this.hits / (float) this.requests));
             this.writer.write("\n");
             this.epochhits = 0;   
         } catch (Exception e) {

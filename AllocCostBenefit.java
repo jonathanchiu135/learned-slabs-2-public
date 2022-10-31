@@ -267,12 +267,12 @@ public class AllocCostBenefit {
             if (min != -1 && min != max) moveSlab(min, max);
 
             // write the hit rate over the last epoch to file
-            this.writer.write("epoch #" + String.valueOf(this.t / LINES_READ_PER_CHUNK) + "\n");
-            this.writer.write(String.format("moved slab from %d to %d\n", min, max));
-            this.writer.write("cost / benefits: " + scToCB.toString() + "\n");
-            this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
-            this.writer.write(String.format("epoch hits: %d / %d = %f\n", this.epochhits, this.t, (float) this.epochhits / (float) this.t));
-            this.writer.write(String.format("lifetime hits: %d / %d = %f\n", this.lifetimehits, this.t, (float) this.lifetimehits / (float) this.t));    
+            this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + "\n");
+            // this.writer.write(String.format("moved slab from %d to %d\n", min, max));
+            // this.writer.write("cost / benefits: " + scToCB.toString() + "\n");
+            // this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
+            this.writer.write(String.format("epoch hitrate: %f\n", (float) this.epochhits / (float) LINES_READ_PER_CHUNK ));
+            this.writer.write(String.format("lifetime hitrate: %f\n", (float) this.lifetimehits / (float) this.t));    
             this.writer.write("\n");
             this.epochhits = 0;
         } catch (Exception e) {
