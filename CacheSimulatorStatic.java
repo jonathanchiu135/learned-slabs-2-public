@@ -1,7 +1,6 @@
 /* 
  * Simulates a static cache on the specified trace 
  */
-
 import java.util.*;
 import java.io.*;
 import java.nio.*;
@@ -185,6 +184,7 @@ public class CacheSimulatorStatic {
         }
     }
 
+    // example how to run
     public static void main(String[] args){  
         System.out.println("Initializing cache and counting hits!");  
         HashMap<Integer, Integer> slabAllocation = new HashMap<>();
@@ -204,7 +204,7 @@ public class CacheSimulatorStatic {
         slabAllocation.put(524288, 1);
         slabAllocation.put(1048576, 1);
         
-        CacheSimulatorStatic currCache = new CacheSimulatorStatic("/mntData2/jason/cphy/w04.oracleGeneral.bin", "./results/w04.static-cache.txt", slabAllocation);
+        CacheSimulatorStatic currCache = new CacheSimulatorStatic("/mntData2/jason/cphy/w05.oracleGeneral.bin", "./results/w05.static-cache.txt", slabAllocation);
         currCache.calculateHitRate();
     }
 

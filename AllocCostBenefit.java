@@ -281,19 +281,24 @@ public class AllocCostBenefit {
         }
     }
 
-    public void processTrace() throws IOException {
-        TraceLine line;
-        while((line = this.readTraceLine()) != null) {
-            if (this.t % LINES_READ_PER_CHUNK == 0) {
-                this.collectStats();
+    public void processTrace() {
+        try {
+            TraceLine line;
+            while((line = this.readTraceLine()) != null) {
+                if (this.t % LINES_READ_PER_CHUNK == 0) {
+                    this.collectStats();
+                }
+                this.processLine(line);
+                this.t++;
             }
-            this.processLine(line);
-            this.t++;
+            this.writer.close();
+            this.reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        this.writer.close();
-        this.reader.close();
     }
 
+    // example how to run
     public static void main(String[] args) throws Exception {
         AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/jason/cphy/w05.oracleGeneral.bin", "./results/w05.cost-benefit.txt");
         alloc.processTrace();
