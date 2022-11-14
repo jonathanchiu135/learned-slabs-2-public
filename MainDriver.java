@@ -71,17 +71,17 @@ public class MainDriver {
 
     public static void main(String[] args) {
         try {
-            String overallRes = "./results/overallRes.txt";
+            String overallRes = "./results2/overallRes.txt";
             BufferedWriter overallWriter = new BufferedWriter(new FileWriter(overallRes));
-            for (int i = 1; i < 20; i++) {
+            for (int i = 1; i < 51; i++) {
                 String traceStringNum = i < 10 ? "0" + Integer.toString(i) : Integer.toString(i);
 
                 // run the traces
                 System.out.println("processing " + traceStringNum);
                 String tracelink = "/mntData2/jason/cphy/w" + traceStringNum + ".oracleGeneral.bin";
-                String costBenefitRes =  "./results/w" + traceStringNum + ".cost-benefit.txt";
-                String staticRes = "./results/w" + traceStringNum + ".static-cache.txt";
-                String splicedRes = "./results/w" + traceStringNum + ".spliced.txt";
+                String costBenefitRes =  "./results2/w" + traceStringNum + ".cost-benefit.txt";
+                String staticRes = "./results2/w" + traceStringNum + ".static-cache.txt";
+                String splicedRes = "./results2/w" + traceStringNum + ".spliced.txt";
                 
                 // cost-benefit analysis
                 AllocCostBenefit alloc = new AllocCostBenefit(tracelink, costBenefitRes);

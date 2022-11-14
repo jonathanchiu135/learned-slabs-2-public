@@ -62,6 +62,7 @@ public class AllocCostBenefit {
         16384, 32768, 65536, 131072, 262144, 524288, 1048576};
     public static int LINES_READ_PER_CHUNK = 540000;
     static int SLAB_SIZE = 1048576;
+    static int MOVE_THRESHOLD = 100;
 
     // class variables
     int t;
@@ -264,8 +265,9 @@ public class AllocCostBenefit {
             }
 
             // move a slab from min to max slab class
-            if (min != -1 && min != max) moveSlab(min, max);
-
+            if (min != -1 && min != max && minCB < MOVE_THRESHOLD) {
+                if (this.SLAB_COUNTS_MAP.get(min) != 0) moveSlab(min, max);
+            }   
             // write the hit rate over the last epoch to file
             this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + "\n");
             // this.writer.write(String.format("moved slab from %d to %d\n", min, max));
@@ -300,7 +302,7 @@ public class AllocCostBenefit {
 
     // example how to run
     public static void main(String[] args) throws Exception {
-        AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/jason/cphy/w05.oracleGeneral.bin", "./results/w05.cost-benefit.txt");
+        AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/jason/cphy/w03.oracleGeneral.bin", "./results2/w03.cost-benefit.txt");
         alloc.processTrace();
     }
 }
