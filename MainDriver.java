@@ -71,7 +71,7 @@ public class MainDriver {
 
     public static void main(String[] args) {
         try {
-            String overallRes = "./results2/overallRes.txt";
+            String overallRes = "./results3/overallRes.txt";
             BufferedWriter overallWriter = new BufferedWriter(new FileWriter(overallRes));
             for (int i = 1; i < 51; i++) {
                 String traceStringNum = i < 10 ? "0" + Integer.toString(i) : Integer.toString(i);
@@ -79,9 +79,9 @@ public class MainDriver {
                 // run the traces
                 System.out.println("processing " + traceStringNum);
                 String tracelink = "/mntData2/jason/cphy/w" + traceStringNum + ".oracleGeneral.bin";
-                String costBenefitRes =  "./results2/w" + traceStringNum + ".cost-benefit.txt";
-                String staticRes = "./results2/w" + traceStringNum + ".static-cache.txt";
-                String splicedRes = "./results2/w" + traceStringNum + ".spliced.txt";
+                String costBenefitRes =  "./results3/w" + traceStringNum + ".cost-benefit.txt";
+                String staticRes = "./results3/w" + traceStringNum + ".static-cache.txt";
+                String splicedRes = "./results3/w" + traceStringNum + ".spliced.txt";
                 
                 // cost-benefit analysis
                 AllocCostBenefit alloc = new AllocCostBenefit(tracelink, costBenefitRes);
@@ -101,3 +101,6 @@ public class MainDriver {
         }
     }
 }
+
+// more threshold values + visualize / plot which ones better
+// analyze how slabs move over time

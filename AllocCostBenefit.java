@@ -62,7 +62,7 @@ public class AllocCostBenefit {
         16384, 32768, 65536, 131072, 262144, 524288, 1048576};
     public static int LINES_READ_PER_CHUNK = 540000;
     static int SLAB_SIZE = 1048576;
-    static int MOVE_THRESHOLD = 100;
+    static int MOVE_THRESHOLD = 1000;
 
     // class variables
     int t;
