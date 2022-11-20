@@ -178,11 +178,6 @@ public class AllocCostBenefit {
     
 
     // move least used -> to most used
-    // to readjust (if not making a difference):
-    //  either move more often / move more slabs at once
-    //  play around with lines between recalculations
-    //  test using a threshhold for moving (instead of always moving)
-
     // just use purely hitrate to judge performance (don't scale by size)
 
 
@@ -265,9 +260,11 @@ public class AllocCostBenefit {
             }
 
             // move a slab from min to max slab class
-            if (min != -1 && min != max && minCB < MOVE_THRESHOLD) {
+            // if (min != -1 && min != max && minCB < MOVE_THRESHOLD) {
+            if (min != -1 && min != max) {
                 if (this.SLAB_COUNTS_MAP.get(min) != 0) moveSlab(min, max);
             }   
+            
             // write the hit rate over the last epoch to file
             this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + "\n");
             // this.writer.write(String.format("moved slab from %d to %d\n", min, max));
@@ -302,7 +299,7 @@ public class AllocCostBenefit {
 
     // example how to run
     public static void main(String[] args) throws Exception {
-        AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/jason/cphy/w03.oracleGeneral.bin", "./results2/w03.cost-benefit.txt");
+        AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/jason/cphy/w20.oracleGeneral.bin", "./results/w20.cost-benefit.txt");
         alloc.processTrace();
     }
 }

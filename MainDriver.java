@@ -101,6 +101,23 @@ public class MainDriver {
         }
     }
 }
+/* 
+    results: no threshold
+    results2: threshold 100
+    results3: threshold 1000
+*/
 
 // more threshold values + visualize / plot which ones better
-// analyze how slabs move over time
+
+// analyze how slabs move over time (move a bunch at beginning?)
+    // maybe plot like "moves every 10 time steps"?
+
+
+
+
+// move least used -> to most used
+// to readjust (if not making a difference):
+//  either move more often / move more slabs at once
+//  play around with lines between recalculations
+//  test using a threshhold for moving (instead of always moving)
+
