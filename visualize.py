@@ -1,4 +1,4 @@
-# import matplotlib.pylab as plt
+import matplotlib.pylab as plt
 
 def get_hitrates(results_file):
     f = open("./actualResults/" + results_file, "r")
@@ -32,8 +32,14 @@ for i in range(1, 51):
 print(static_cnt, no_threshold_cnt, threshold_100_cnt, threshold_1000_cnt)
 
 # plot the graphs
-lists = sorted(d.items()) # sorted by key, return a list of tuples
-x, y = zip(*lists) # unpack a list of pairs into two tuples
+def plot_coords(curr, curr_label):
+    lists = sorted(curr.items()) # sorted by key, return a list of tuples
+    x, y = zip(*lists) # unpack a list of pairs into two tuples
+    plt.scatter(x, y, label=curr_label)
 
-plt.plot(x, y)
+plot_coords(static_hitrates, "static")
+plot_coords(no_threshold_hitrates, "no_threshold")
+plot_coords(threshold_100_hitrates, "threshold_100")
+plot_coords(threshold_1000_hitrates, "threshold_1000")
+plt.legend(loc="upper left")
 plt.show()
