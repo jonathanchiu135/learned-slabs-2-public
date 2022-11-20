@@ -1,0 +1,1596 @@
+epoch 1 (moved)
+epoch hitrate: 0.106820
+lifetime hitrate: 0.106820
+
+epoch 2 (moved)
+epoch hitrate: 0.201539
+lifetime hitrate: 0.154180
+
+epoch 3 (moved)
+epoch hitrate: 0.137139
+lifetime hitrate: 0.148499
+
+epoch 4 (moved)
+epoch hitrate: 0.016254
+lifetime hitrate: 0.115438
+
+epoch 5 (moved)
+epoch hitrate: 0.030781
+lifetime hitrate: 0.098507
+
+epoch 6 (moved)
+epoch hitrate: 0.005815
+lifetime hitrate: 0.083058
+
+epoch 7 (moved)
+epoch hitrate: 0.014137
+lifetime hitrate: 0.073212
+
+epoch 8 (moved)
+epoch hitrate: 0.010320
+lifetime hitrate: 0.065351
+
+epoch 9 (moved)
+epoch hitrate: 0.010485
+lifetime hitrate: 0.059255
+
+epoch 10 (moved)
+epoch hitrate: 0.038798
+lifetime hitrate: 0.057209
+
+epoch 11 (moved)
+epoch hitrate: 0.090939
+lifetime hitrate: 0.060275
+
+epoch 12 (moved)
+epoch hitrate: 0.137546
+lifetime hitrate: 0.066715
+
+epoch 13 (moved)
+epoch hitrate: 0.120133
+lifetime hitrate: 0.070824
+
+epoch 14 (moved)
+epoch hitrate: 0.114780
+lifetime hitrate: 0.073963
+
+epoch 15 (moved)
+epoch hitrate: 0.180139
+lifetime hitrate: 0.081042
+
+epoch 16 (moved)
+epoch hitrate: 0.154874
+lifetime hitrate: 0.085656
+
+epoch 17 (moved)
+epoch hitrate: 0.041543
+lifetime hitrate: 0.083061
+
+epoch 18 (moved)
+epoch hitrate: 0.010019
+lifetime hitrate: 0.079003
+
+epoch 19 (moved)
+epoch hitrate: 0.018346
+lifetime hitrate: 0.075811
+
+epoch 20 (moved)
+epoch hitrate: 0.024441
+lifetime hitrate: 0.073242
+
+epoch 21 (moved)
+epoch hitrate: 0.010598
+lifetime hitrate: 0.070259
+
+epoch 22 (moved)
+epoch hitrate: 0.006430
+lifetime hitrate: 0.067358
+
+epoch 23 (moved)
+epoch hitrate: 0.000304
+lifetime hitrate: 0.064443
+
+epoch 24 (moved)
+epoch hitrate: 0.004626
+lifetime hitrate: 0.061950
+
+epoch 25 (moved)
+epoch hitrate: 0.010274
+lifetime hitrate: 0.059883
+
+epoch 26 (moved)
+epoch hitrate: 0.009513
+lifetime hitrate: 0.057946
+
+epoch 27 (moved)
+epoch hitrate: 0.009533
+lifetime hitrate: 0.056153
+
+epoch 28 (moved)
+epoch hitrate: 0.010072
+lifetime hitrate: 0.054507
+
+epoch 29 (moved)
+epoch hitrate: 0.002631
+lifetime hitrate: 0.052718
+
+epoch 30 (moved)
+epoch hitrate: 0.006944
+lifetime hitrate: 0.051192
+
+epoch 31 (moved)
+epoch hitrate: 0.009543
+lifetime hitrate: 0.049849
+
+epoch 32 (moved)
+epoch hitrate: 0.008469
+lifetime hitrate: 0.048556
+
+epoch 33 (moved)
+epoch hitrate: 0.013806
+lifetime hitrate: 0.047503
+
+epoch 34 (moved)
+epoch hitrate: 0.017904
+lifetime hitrate: 0.046632
+
+epoch 35 (moved)
+epoch hitrate: 0.077633
+lifetime hitrate: 0.047518
+
+epoch 36 (moved)
+epoch hitrate: 0.141748
+lifetime hitrate: 0.050135
+
+epoch 37 (moved)
+epoch hitrate: 0.172680
+lifetime hitrate: 0.053447
+
+epoch 38 (moved)
+epoch hitrate: 0.177420
+lifetime hitrate: 0.056710
+
+epoch 39 (moved)
+epoch hitrate: 0.175498
+lifetime hitrate: 0.059756
+
+epoch 40 (moved)
+epoch hitrate: 0.111200
+lifetime hitrate: 0.061042
+
+epoch 41 (moved)
+epoch hitrate: 0.199680
+lifetime hitrate: 0.064423
+
+epoch 42 (moved)
+epoch hitrate: 0.163441
+lifetime hitrate: 0.066781
+
+epoch 43 (moved)
+epoch hitrate: 0.055046
+lifetime hitrate: 0.066508
+
+epoch 44 (moved)
+epoch hitrate: 0.001104
+lifetime hitrate: 0.065021
+
+epoch 45 (moved)
+epoch hitrate: 0.016076
+lifetime hitrate: 0.063934
+
+epoch 46 (moved)
+epoch hitrate: 0.054293
+lifetime hitrate: 0.063724
+
+epoch 47
+epoch hitrate: 0.019556
+lifetime hitrate: 0.062784
+
+epoch 48
+epoch hitrate: 0.029276
+lifetime hitrate: 0.062086
+
+epoch 49
+epoch hitrate: 0.030757
+lifetime hitrate: 0.061447
+
+epoch 50
+epoch hitrate: 0.029076
+lifetime hitrate: 0.060800
+
+epoch 51
+epoch hitrate: 0.026485
+lifetime hitrate: 0.060127
+
+epoch 52
+epoch hitrate: 0.016772
+lifetime hitrate: 0.059293
+
+epoch 53
+epoch hitrate: 0.038691
+lifetime hitrate: 0.058904
+
+epoch 54
+epoch hitrate: 0.024987
+lifetime hitrate: 0.058276
+
+epoch 55
+epoch hitrate: 0.024639
+lifetime hitrate: 0.057665
+
+epoch 56
+epoch hitrate: 0.025154
+lifetime hitrate: 0.057084
+
+epoch 57
+epoch hitrate: 0.018763
+lifetime hitrate: 0.056412
+
+epoch 58
+epoch hitrate: 0.041856
+lifetime hitrate: 0.056161
+
+epoch 59
+epoch hitrate: 0.039150
+lifetime hitrate: 0.055872
+
+epoch 60
+epoch hitrate: 0.076983
+lifetime hitrate: 0.056224
+
+epoch 61
+epoch hitrate: 0.075443
+lifetime hitrate: 0.056539
+
+epoch 62
+epoch hitrate: 0.067533
+lifetime hitrate: 0.056717
+
+epoch 63
+epoch hitrate: 0.058194
+lifetime hitrate: 0.056740
+
+epoch 64 (moved)
+epoch hitrate: 0.077833
+lifetime hitrate: 0.057070
+
+epoch 65 (moved)
+epoch hitrate: 0.089631
+lifetime hitrate: 0.057571
+
+epoch 66 (moved)
+epoch hitrate: 0.106604
+lifetime hitrate: 0.058314
+
+epoch 67 (moved)
+epoch hitrate: 0.091869
+lifetime hitrate: 0.058814
+
+epoch 68
+epoch hitrate: 0.032315
+lifetime hitrate: 0.058425
+
+epoch 69
+epoch hitrate: 0.046498
+lifetime hitrate: 0.058252
+
+epoch 70
+epoch hitrate: 0.153259
+lifetime hitrate: 0.059609
+
+epoch 71
+epoch hitrate: 0.198089
+lifetime hitrate: 0.061560
+
+epoch 72
+epoch hitrate: 0.169994
+lifetime hitrate: 0.063066
+
+epoch 73
+epoch hitrate: 0.190076
+lifetime hitrate: 0.064805
+
+epoch 74
+epoch hitrate: 0.205422
+lifetime hitrate: 0.066706
+
+epoch 75
+epoch hitrate: 0.042417
+lifetime hitrate: 0.066382
+
+epoch 76
+epoch hitrate: 0.006144
+lifetime hitrate: 0.065589
+
+epoch 77
+epoch hitrate: 0.006483
+lifetime hitrate: 0.064822
+
+epoch 78
+epoch hitrate: 0.006467
+lifetime hitrate: 0.064073
+
+epoch 79
+epoch hitrate: 0.036333
+lifetime hitrate: 0.063722
+
+epoch 80
+epoch hitrate: 0.032294
+lifetime hitrate: 0.063329
+
+epoch 81
+epoch hitrate: 0.027050
+lifetime hitrate: 0.062882
+
+epoch 82
+epoch hitrate: 0.049067
+lifetime hitrate: 0.062713
+
+epoch 83
+epoch hitrate: 0.016996
+lifetime hitrate: 0.062162
+
+epoch 84
+epoch hitrate: 0.009787
+lifetime hitrate: 0.061539
+
+epoch 85
+epoch hitrate: 0.015769
+lifetime hitrate: 0.061000
+
+epoch 86
+epoch hitrate: 0.011637
+lifetime hitrate: 0.060426
+
+epoch 87
+epoch hitrate: 0.018144
+lifetime hitrate: 0.059940
+
+epoch 88
+epoch hitrate: 0.031465
+lifetime hitrate: 0.059617
+
+epoch 89
+epoch hitrate: 0.007665
+lifetime hitrate: 0.059033
+
+epoch 90
+epoch hitrate: 0.014843
+lifetime hitrate: 0.058542
+
+epoch 91
+epoch hitrate: 0.015959
+lifetime hitrate: 0.058074
+
+epoch 92
+epoch hitrate: 0.010761
+lifetime hitrate: 0.057560
+
+epoch 93
+epoch hitrate: 0.018557
+lifetime hitrate: 0.057140
+
+epoch 94
+epoch hitrate: 0.010952
+lifetime hitrate: 0.056649
+
+epoch 95
+epoch hitrate: 0.019452
+lifetime hitrate: 0.056257
+
+epoch 96
+epoch hitrate: 0.005935
+lifetime hitrate: 0.055733
+
+epoch 97
+epoch hitrate: 0.007143
+lifetime hitrate: 0.055232
+
+epoch 98
+epoch hitrate: 0.029569
+lifetime hitrate: 0.054970
+
+epoch 99
+epoch hitrate: 0.051320
+lifetime hitrate: 0.054934
+
+epoch 100
+epoch hitrate: 0.076391
+lifetime hitrate: 0.055148
+
+epoch 101
+epoch hitrate: 0.081213
+lifetime hitrate: 0.055406
+
+epoch 102
+epoch hitrate: 0.063530
+lifetime hitrate: 0.055486
+
+epoch 103
+epoch hitrate: 0.032578
+lifetime hitrate: 0.055263
+
+epoch 104
+epoch hitrate: 0.035548
+lifetime hitrate: 0.055074
+
+epoch 105
+epoch hitrate: 0.040370
+lifetime hitrate: 0.054934
+
+epoch 106
+epoch hitrate: 0.040522
+lifetime hitrate: 0.054798
+
+epoch 107
+epoch hitrate: 0.036994
+lifetime hitrate: 0.054632
+
+epoch 108
+epoch hitrate: 0.050513
+lifetime hitrate: 0.054593
+
+epoch 109
+epoch hitrate: 0.046507
+lifetime hitrate: 0.054519
+
+epoch 110
+epoch hitrate: 0.066776
+lifetime hitrate: 0.054631
+
+epoch 111
+epoch hitrate: 0.088061
+lifetime hitrate: 0.054932
+
+epoch 112
+epoch hitrate: 0.109609
+lifetime hitrate: 0.055420
+
+epoch 113
+epoch hitrate: 0.099430
+lifetime hitrate: 0.055809
+
+epoch 114
+epoch hitrate: 0.063898
+lifetime hitrate: 0.055880
+
+epoch 115
+epoch hitrate: 0.067211
+lifetime hitrate: 0.055979
+
+epoch 116
+epoch hitrate: 0.074183
+lifetime hitrate: 0.056136
+
+epoch 117
+epoch hitrate: 0.096574
+lifetime hitrate: 0.056482
+
+epoch 118
+epoch hitrate: 0.092750
+lifetime hitrate: 0.056789
+
+epoch 119
+epoch hitrate: 0.090050
+lifetime hitrate: 0.057068
+
+epoch 120
+epoch hitrate: 0.077396
+lifetime hitrate: 0.057238
+
+epoch 121
+epoch hitrate: 0.079539
+lifetime hitrate: 0.057422
+
+epoch 122
+epoch hitrate: 0.062257
+lifetime hitrate: 0.057462
+
+epoch 123
+epoch hitrate: 0.055661
+lifetime hitrate: 0.057447
+
+epoch 124
+epoch hitrate: 0.038165
+lifetime hitrate: 0.057292
+
+epoch 125
+epoch hitrate: 0.069950
+lifetime hitrate: 0.057393
+
+epoch 126
+epoch hitrate: 0.086604
+lifetime hitrate: 0.057625
+
+epoch 127
+epoch hitrate: 0.072367
+lifetime hitrate: 0.057741
+
+epoch 128
+epoch hitrate: 0.031781
+lifetime hitrate: 0.057538
+
+epoch 129
+epoch hitrate: 0.043424
+lifetime hitrate: 0.057429
+
+epoch 130
+epoch hitrate: 0.027107
+lifetime hitrate: 0.057195
+
+epoch 131
+epoch hitrate: 0.039244
+lifetime hitrate: 0.057058
+
+epoch 132
+epoch hitrate: 0.046950
+lifetime hitrate: 0.056982
+
+epoch 133
+epoch hitrate: 0.050591
+lifetime hitrate: 0.056934
+
+epoch 134
+epoch hitrate: 0.033800
+lifetime hitrate: 0.056761
+
+epoch 135
+epoch hitrate: 0.033270
+lifetime hitrate: 0.056587
+
+epoch 136
+epoch hitrate: 0.066724
+lifetime hitrate: 0.056662
+
+epoch 137
+epoch hitrate: 0.085204
+lifetime hitrate: 0.056870
+
+epoch 138
+epoch hitrate: 0.097713
+lifetime hitrate: 0.057166
+
+epoch 139
+epoch hitrate: 0.094630
+lifetime hitrate: 0.057435
+
+epoch 140
+epoch hitrate: 0.129952
+lifetime hitrate: 0.057953
+
+epoch 141
+epoch hitrate: 0.146289
+lifetime hitrate: 0.058580
+
+epoch 142
+epoch hitrate: 0.070456
+lifetime hitrate: 0.058663
+
+epoch 143
+epoch hitrate: 0.077248
+lifetime hitrate: 0.058793
+
+epoch 144
+epoch hitrate: 0.041959
+lifetime hitrate: 0.058677
+
+epoch 145
+epoch hitrate: 0.053291
+lifetime hitrate: 0.058639
+
+epoch 146
+epoch hitrate: 0.030224
+lifetime hitrate: 0.058445
+
+epoch 147
+epoch hitrate: 0.047794
+lifetime hitrate: 0.058372
+
+epoch 148
+epoch hitrate: 0.027985
+lifetime hitrate: 0.058167
+
+epoch 149
+epoch hitrate: 0.035104
+lifetime hitrate: 0.058012
+
+epoch 150
+epoch hitrate: 0.030343
+lifetime hitrate: 0.057828
+
+epoch 151
+epoch hitrate: 0.055039
+lifetime hitrate: 0.057809
+
+epoch 152
+epoch hitrate: 0.045967
+lifetime hitrate: 0.057731
+
+epoch 153
+epoch hitrate: 0.066093
+lifetime hitrate: 0.057786
+
+epoch 154
+epoch hitrate: 0.049826
+lifetime hitrate: 0.057734
+
+epoch 155
+epoch hitrate: 0.044648
+lifetime hitrate: 0.057650
+
+epoch 156
+epoch hitrate: 0.033220
+lifetime hitrate: 0.057493
+
+epoch 157
+epoch hitrate: 0.073059
+lifetime hitrate: 0.057592
+
+epoch 158
+epoch hitrate: 0.208837
+lifetime hitrate: 0.058550
+
+epoch 159
+epoch hitrate: 0.177707
+lifetime hitrate: 0.059299
+
+epoch 160
+epoch hitrate: 0.190157
+lifetime hitrate: 0.060117
+
+epoch 161
+epoch hitrate: 0.166744
+lifetime hitrate: 0.060779
+
+epoch 162
+epoch hitrate: 0.210187
+lifetime hitrate: 0.061702
+
+epoch 163
+epoch hitrate: 0.136798
+lifetime hitrate: 0.062162
+
+epoch 164
+epoch hitrate: 0.056859
+lifetime hitrate: 0.062130
+
+epoch 165
+epoch hitrate: 0.133891
+lifetime hitrate: 0.062565
+
+epoch 166
+epoch hitrate: 0.232600
+lifetime hitrate: 0.063589
+
+epoch 167
+epoch hitrate: 0.129831
+lifetime hitrate: 0.063986
+
+epoch 168
+epoch hitrate: 0.136480
+lifetime hitrate: 0.064417
+
+epoch 169
+epoch hitrate: 0.048919
+lifetime hitrate: 0.064326
+
+epoch 170
+epoch hitrate: 0.091950
+lifetime hitrate: 0.064488
+
+epoch 171
+epoch hitrate: 0.182080
+lifetime hitrate: 0.065176
+
+epoch 172
+epoch hitrate: 0.172352
+lifetime hitrate: 0.065799
+
+epoch 173
+epoch hitrate: 0.055520
+lifetime hitrate: 0.065739
+
+epoch 174
+epoch hitrate: 0.083517
+lifetime hitrate: 0.065842
+
+epoch 175
+epoch hitrate: 0.025235
+lifetime hitrate: 0.065610
+
+epoch 176
+epoch hitrate: 0.083002
+lifetime hitrate: 0.065708
+
+epoch 177
+epoch hitrate: 0.124515
+lifetime hitrate: 0.066041
+
+epoch 178
+epoch hitrate: 0.101057
+lifetime hitrate: 0.066237
+
+epoch 179
+epoch hitrate: 0.082922
+lifetime hitrate: 0.066331
+
+epoch 180
+epoch hitrate: 0.044204
+lifetime hitrate: 0.066208
+
+epoch 181
+epoch hitrate: 0.043104
+lifetime hitrate: 0.066080
+
+epoch 182
+epoch hitrate: 0.074226
+lifetime hitrate: 0.066125
+
+epoch 183
+epoch hitrate: 0.045865
+lifetime hitrate: 0.066014
+
+epoch 184
+epoch hitrate: 0.101396
+lifetime hitrate: 0.066206
+
+epoch 185
+epoch hitrate: 0.006987
+lifetime hitrate: 0.065886
+
+epoch 186
+epoch hitrate: 0.028507
+lifetime hitrate: 0.065685
+
+epoch 187
+epoch hitrate: 0.019681
+lifetime hitrate: 0.065439
+
+epoch 188
+epoch hitrate: 0.008670
+lifetime hitrate: 0.065137
+
+epoch 189
+epoch hitrate: 0.013111
+lifetime hitrate: 0.064862
+
+epoch 190
+epoch hitrate: 0.014569
+lifetime hitrate: 0.064597
+
+epoch 191
+epoch hitrate: 0.010141
+lifetime hitrate: 0.064312
+
+epoch 192
+epoch hitrate: 0.017017
+lifetime hitrate: 0.064066
+
+epoch 193
+epoch hitrate: 0.029367
+lifetime hitrate: 0.063886
+
+epoch 194
+epoch hitrate: 0.024822
+lifetime hitrate: 0.063685
+
+epoch 195
+epoch hitrate: 0.055089
+lifetime hitrate: 0.063641
+
+epoch 196
+epoch hitrate: 0.027372
+lifetime hitrate: 0.063456
+
+epoch 197 (moved)
+epoch hitrate: 0.154559
+lifetime hitrate: 0.063918
+
+epoch 198
+epoch hitrate: 0.033969
+lifetime hitrate: 0.063767
+
+epoch 199
+epoch hitrate: 0.034393
+lifetime hitrate: 0.063619
+
+epoch 200
+epoch hitrate: 0.036533
+lifetime hitrate: 0.063484
+
+epoch 201
+epoch hitrate: 0.081098
+lifetime hitrate: 0.063571
+
+epoch 202
+epoch hitrate: 0.134565
+lifetime hitrate: 0.063923
+
+epoch 203
+epoch hitrate: 0.149163
+lifetime hitrate: 0.064343
+
+epoch 204
+epoch hitrate: 0.126987
+lifetime hitrate: 0.064650
+
+epoch 205
+epoch hitrate: 0.191898
+lifetime hitrate: 0.065271
+
+epoch 206
+epoch hitrate: 0.148570
+lifetime hitrate: 0.065675
+
+epoch 207
+epoch hitrate: 0.140200
+lifetime hitrate: 0.066035
+
+epoch 208
+epoch hitrate: 0.111272
+lifetime hitrate: 0.066252
+
+epoch 209 (moved)
+epoch hitrate: 0.021365
+lifetime hitrate: 0.066038
+
+epoch 210 (moved)
+epoch hitrate: 0.005643
+lifetime hitrate: 0.065750
+
+epoch 211 (moved)
+epoch hitrate: 0.003856
+lifetime hitrate: 0.065457
+
+epoch 212
+epoch hitrate: 0.029563
+lifetime hitrate: 0.065287
+
+epoch 213 (moved)
+epoch hitrate: 0.108087
+lifetime hitrate: 0.065488
+
+epoch 214
+epoch hitrate: 0.185804
+lifetime hitrate: 0.066051
+
+epoch 215 (moved)
+epoch hitrate: 0.149672
+lifetime hitrate: 0.066440
+
+epoch 216 (moved)
+epoch hitrate: 0.085557
+lifetime hitrate: 0.066528
+
+epoch 217
+epoch hitrate: 0.176950
+lifetime hitrate: 0.067037
+
+epoch 218
+epoch hitrate: 0.188167
+lifetime hitrate: 0.067593
+
+epoch 219
+epoch hitrate: 0.129978
+lifetime hitrate: 0.067877
+
+epoch 220
+epoch hitrate: 0.050907
+lifetime hitrate: 0.067800
+
+epoch 221
+epoch hitrate: 0.060393
+lifetime hitrate: 0.067767
+
+epoch 222
+epoch hitrate: 0.063833
+lifetime hitrate: 0.067749
+
+epoch 223
+epoch hitrate: 0.068793
+lifetime hitrate: 0.067754
+
+epoch 224
+epoch hitrate: 0.069370
+lifetime hitrate: 0.067761
+
+epoch 225
+epoch hitrate: 0.072367
+lifetime hitrate: 0.067781
+
+epoch 226
+epoch hitrate: 0.057709
+lifetime hitrate: 0.067737
+
+epoch 227
+epoch hitrate: 0.060009
+lifetime hitrate: 0.067703
+
+epoch 228
+epoch hitrate: 0.050443
+lifetime hitrate: 0.067627
+
+epoch 229
+epoch hitrate: 0.038457
+lifetime hitrate: 0.067500
+
+epoch 230
+epoch hitrate: 0.071961
+lifetime hitrate: 0.067519
+
+epoch 231
+epoch hitrate: 0.040735
+lifetime hitrate: 0.067403
+
+epoch 232
+epoch hitrate: 0.055069
+lifetime hitrate: 0.067350
+
+epoch 233
+epoch hitrate: 0.066759
+lifetime hitrate: 0.067347
+
+epoch 234 (moved)
+epoch hitrate: 0.048522
+lifetime hitrate: 0.067267
+
+epoch 235
+epoch hitrate: 0.031417
+lifetime hitrate: 0.067114
+
+epoch 236
+epoch hitrate: 0.036989
+lifetime hitrate: 0.066987
+
+epoch 237 (moved)
+epoch hitrate: 0.023717
+lifetime hitrate: 0.066804
+
+epoch 238
+epoch hitrate: 0.014017
+lifetime hitrate: 0.066582
+
+epoch 239
+epoch hitrate: 0.002331
+lifetime hitrate: 0.066314
+
+epoch 240 (moved)
+epoch hitrate: 0.015478
+lifetime hitrate: 0.066102
+
+epoch 241
+epoch hitrate: 0.024385
+lifetime hitrate: 0.065929
+
+epoch 242
+epoch hitrate: 0.052415
+lifetime hitrate: 0.065873
+
+epoch 243
+epoch hitrate: 0.019098
+lifetime hitrate: 0.065680
+
+epoch 244 (moved)
+epoch hitrate: 0.015920
+lifetime hitrate: 0.065476
+
+epoch 245 (moved)
+epoch hitrate: 0.019159
+lifetime hitrate: 0.065287
+
+epoch 246
+epoch hitrate: 0.036676
+lifetime hitrate: 0.065171
+
+epoch 247
+epoch hitrate: 0.073315
+lifetime hitrate: 0.065204
+
+epoch 248
+epoch hitrate: 0.037500
+lifetime hitrate: 0.065092
+
+epoch 249 (moved)
+epoch hitrate: 0.033576
+lifetime hitrate: 0.064966
+
+epoch 250
+epoch hitrate: 0.051767
+lifetime hitrate: 0.064913
+
+epoch 251
+epoch hitrate: 0.072970
+lifetime hitrate: 0.064945
+
+epoch 252
+epoch hitrate: 0.061215
+lifetime hitrate: 0.064930
+
+epoch 253
+epoch hitrate: 0.072461
+lifetime hitrate: 0.064960
+
+epoch 254
+epoch hitrate: 0.071620
+lifetime hitrate: 0.064986
+
+epoch 255
+epoch hitrate: 0.086763
+lifetime hitrate: 0.065072
+
+epoch 256
+epoch hitrate: 0.060991
+lifetime hitrate: 0.065056
+
+epoch 257
+epoch hitrate: 0.058119
+lifetime hitrate: 0.065029
+
+epoch 258
+epoch hitrate: 0.079683
+lifetime hitrate: 0.065085
+
+epoch 259
+epoch hitrate: 0.169235
+lifetime hitrate: 0.065488
+
+epoch 260
+epoch hitrate: 0.101257
+lifetime hitrate: 0.065625
+
+epoch 261
+epoch hitrate: 0.130457
+lifetime hitrate: 0.065874
+
+epoch 262 (moved)
+epoch hitrate: 0.147789
+lifetime hitrate: 0.066186
+
+epoch 263
+epoch hitrate: 0.129069
+lifetime hitrate: 0.066425
+
+epoch 264 (moved)
+epoch hitrate: 0.083385
+lifetime hitrate: 0.066490
+
+epoch 265 (moved)
+epoch hitrate: 0.139289
+lifetime hitrate: 0.066764
+
+epoch 266
+epoch hitrate: 0.131520
+lifetime hitrate: 0.067008
+
+epoch 267
+epoch hitrate: 0.106961
+lifetime hitrate: 0.067157
+
+epoch 268 (moved)
+epoch hitrate: 0.103885
+lifetime hitrate: 0.067294
+
+epoch 269 (moved)
+epoch hitrate: 0.120020
+lifetime hitrate: 0.067490
+
+epoch 270 (moved)
+epoch hitrate: 0.099150
+lifetime hitrate: 0.067608
+
+epoch 271 (moved)
+epoch hitrate: 0.137707
+lifetime hitrate: 0.067866
+
+epoch 272
+epoch hitrate: 0.134061
+lifetime hitrate: 0.068110
+
+epoch 273 (moved)
+epoch hitrate: 0.106222
+lifetime hitrate: 0.068249
+
+epoch 274
+epoch hitrate: 0.113520
+lifetime hitrate: 0.068415
+
+epoch 275
+epoch hitrate: 0.110822
+lifetime hitrate: 0.068569
+
+epoch 276
+epoch hitrate: 0.124270
+lifetime hitrate: 0.068771
+
+epoch 277
+epoch hitrate: 0.100141
+lifetime hitrate: 0.068884
+
+epoch 278
+epoch hitrate: 0.113322
+lifetime hitrate: 0.069044
+
+epoch 279
+epoch hitrate: 0.142293
+lifetime hitrate: 0.069306
+
+epoch 280
+epoch hitrate: 0.118594
+lifetime hitrate: 0.069482
+
+epoch 281
+epoch hitrate: 0.136650
+lifetime hitrate: 0.069721
+
+epoch 282
+epoch hitrate: 0.128057
+lifetime hitrate: 0.069928
+
+epoch 283
+epoch hitrate: 0.127654
+lifetime hitrate: 0.070132
+
+epoch 284
+epoch hitrate: 0.151356
+lifetime hitrate: 0.070418
+
+epoch 285
+epoch hitrate: 0.164133
+lifetime hitrate: 0.070747
+
+epoch 286
+epoch hitrate: 0.143315
+lifetime hitrate: 0.071001
+
+epoch 287
+epoch hitrate: 0.145667
+lifetime hitrate: 0.071261
+
+epoch 288
+epoch hitrate: 0.154076
+lifetime hitrate: 0.071548
+
+epoch 289
+epoch hitrate: 0.136289
+lifetime hitrate: 0.071772
+
+epoch 290
+epoch hitrate: 0.141535
+lifetime hitrate: 0.072013
+
+epoch 291
+epoch hitrate: 0.124831
+lifetime hitrate: 0.072194
+
+epoch 292
+epoch hitrate: 0.051000
+lifetime hitrate: 0.072122
+
+epoch 293
+epoch hitrate: 0.144181
+lifetime hitrate: 0.072368
+
+epoch 294
+epoch hitrate: 0.066672
+lifetime hitrate: 0.072348
+
+epoch 295
+epoch hitrate: 0.045993
+lifetime hitrate: 0.072259
+
+epoch 296
+epoch hitrate: 0.040650
+lifetime hitrate: 0.072152
+
+epoch 297
+epoch hitrate: 0.122563
+lifetime hitrate: 0.072322
+
+epoch 298
+epoch hitrate: 0.036857
+lifetime hitrate: 0.072203
+
+epoch 299
+epoch hitrate: 0.018620
+lifetime hitrate: 0.072024
+
+epoch 300
+epoch hitrate: 0.045463
+lifetime hitrate: 0.071935
+
+epoch 301
+epoch hitrate: 0.075463
+lifetime hitrate: 0.071947
+
+epoch 302
+epoch hitrate: 0.092606
+lifetime hitrate: 0.072015
+
+epoch 303
+epoch hitrate: 0.080804
+lifetime hitrate: 0.072044
+
+epoch 304
+epoch hitrate: 0.075272
+lifetime hitrate: 0.072055
+
+epoch 305
+epoch hitrate: 0.115093
+lifetime hitrate: 0.072196
+
+epoch 306
+epoch hitrate: 0.047131
+lifetime hitrate: 0.072114
+
+epoch 307
+epoch hitrate: 0.085726
+lifetime hitrate: 0.072159
+
+epoch 308
+epoch hitrate: 0.064096
+lifetime hitrate: 0.072132
+
+epoch 309
+epoch hitrate: 0.038335
+lifetime hitrate: 0.072023
+
+epoch 310
+epoch hitrate: 0.045911
+lifetime hitrate: 0.071939
+
+epoch 311
+epoch hitrate: 0.044085
+lifetime hitrate: 0.071849
+
+epoch 312
+epoch hitrate: 0.040730
+lifetime hitrate: 0.071750
+
+epoch 313
+epoch hitrate: 0.062972
+lifetime hitrate: 0.071721
+
+epoch 314
+epoch hitrate: 0.044985
+lifetime hitrate: 0.071636
+
+epoch 315
+epoch hitrate: 0.049281
+lifetime hitrate: 0.071565
+
+epoch 316
+epoch hitrate: 0.036678
+lifetime hitrate: 0.071455
+
+epoch 317
+epoch hitrate: 0.028063
+lifetime hitrate: 0.071318
+
+epoch 318
+epoch hitrate: 0.047874
+lifetime hitrate: 0.071244
+
+epoch 319
+epoch hitrate: 0.102198
+lifetime hitrate: 0.071341
+
+epoch 320
+epoch hitrate: 0.124748
+lifetime hitrate: 0.071508
+
+epoch 321
+epoch hitrate: 0.075487
+lifetime hitrate: 0.071521
+
+epoch 322
+epoch hitrate: 0.101833
+lifetime hitrate: 0.071615
+
+epoch 323
+epoch hitrate: 0.086330
+lifetime hitrate: 0.071660
+
+epoch 324
+epoch hitrate: 0.145657
+lifetime hitrate: 0.071889
+
+epoch 325
+epoch hitrate: 0.100846
+lifetime hitrate: 0.071978
+
+epoch 326
+epoch hitrate: 0.109952
+lifetime hitrate: 0.072094
+
+epoch 327
+epoch hitrate: 0.199293
+lifetime hitrate: 0.072483
+
+epoch 328
+epoch hitrate: 0.227369
+lifetime hitrate: 0.072956
+
+epoch 329
+epoch hitrate: 0.248400
+lifetime hitrate: 0.073489
+
+epoch 330
+epoch hitrate: 0.148272
+lifetime hitrate: 0.073715
+
+epoch 331
+epoch hitrate: 0.207937
+lifetime hitrate: 0.074121
+
+epoch 332
+epoch hitrate: 0.258693
+lifetime hitrate: 0.074677
+
+epoch 333
+epoch hitrate: 0.277900
+lifetime hitrate: 0.075287
+
+epoch 334
+epoch hitrate: 0.182556
+lifetime hitrate: 0.075608
+
+epoch 335
+epoch hitrate: 0.253776
+lifetime hitrate: 0.076140
+
+epoch 336
+epoch hitrate: 0.219531
+lifetime hitrate: 0.076567
+
+epoch 337
+epoch hitrate: 0.257535
+lifetime hitrate: 0.077104
+
+epoch 338
+epoch hitrate: 0.244383
+lifetime hitrate: 0.077599
+
+epoch 339
+epoch hitrate: 0.172694
+lifetime hitrate: 0.077879
+
+epoch 340
+epoch hitrate: 0.173354
+lifetime hitrate: 0.078160
+
+epoch 341
+epoch hitrate: 0.185793
+lifetime hitrate: 0.078476
+
+epoch 342
+epoch hitrate: 0.239807
+lifetime hitrate: 0.078947
+
+epoch 343
+epoch hitrate: 0.256335
+lifetime hitrate: 0.079465
+
+epoch 344
+epoch hitrate: 0.263981
+lifetime hitrate: 0.080001
+
+epoch 345
+epoch hitrate: 0.243304
+lifetime hitrate: 0.080474
+
+epoch 346
+epoch hitrate: 0.243578
+lifetime hitrate: 0.080946
+
+epoch 347
+epoch hitrate: 0.251441
+lifetime hitrate: 0.081437
+
+epoch 348
+epoch hitrate: 0.250891
+lifetime hitrate: 0.081924
+
+epoch 349
+epoch hitrate: 0.230815
+lifetime hitrate: 0.082351
+
+epoch 350
+epoch hitrate: 0.198396
+lifetime hitrate: 0.082682
+
+epoch 351
+epoch hitrate: 0.183796
+lifetime hitrate: 0.082970
+
+epoch 352
+epoch hitrate: 0.196183
+lifetime hitrate: 0.083292
+
+epoch 353
+epoch hitrate: 0.227206
+lifetime hitrate: 0.083700
+
+epoch 354
+epoch hitrate: 0.232863
+lifetime hitrate: 0.084121
+
+epoch 355
+epoch hitrate: 0.239411
+lifetime hitrate: 0.084558
+
+epoch 356
+epoch hitrate: 0.146150
+lifetime hitrate: 0.084731
+
+epoch 357
+epoch hitrate: 0.128946
+lifetime hitrate: 0.084855
+
+epoch 358
+epoch hitrate: 0.182269
+lifetime hitrate: 0.085127
+
+epoch 359
+epoch hitrate: 0.195265
+lifetime hitrate: 0.085434
+
+epoch 360
+epoch hitrate: 0.262072
+lifetime hitrate: 0.085925
+
+epoch 361
+epoch hitrate: 0.165615
+lifetime hitrate: 0.086146
+
+epoch 362
+epoch hitrate: 0.221965
+lifetime hitrate: 0.086521
+
+epoch 363
+epoch hitrate: 0.274402
+lifetime hitrate: 0.087038
+
+epoch 364
+epoch hitrate: 0.145291
+lifetime hitrate: 0.087198
+
+epoch 365
+epoch hitrate: 0.237880
+lifetime hitrate: 0.087611
+
+epoch 366
+epoch hitrate: 0.259313
+lifetime hitrate: 0.088080
+
+epoch 367
+epoch hitrate: 0.193646
+lifetime hitrate: 0.088368
+
+epoch 368
+epoch hitrate: 0.168513
+lifetime hitrate: 0.088586
+
+epoch 369
+epoch hitrate: 0.118437
+lifetime hitrate: 0.088667
+
+epoch 370
+epoch hitrate: 0.089787
+lifetime hitrate: 0.088670
+
+epoch 371
+epoch hitrate: 0.103157
+lifetime hitrate: 0.088709
+
+epoch 372
+epoch hitrate: 0.133020
+lifetime hitrate: 0.088828
+
+epoch 373
+epoch hitrate: 0.132896
+lifetime hitrate: 0.088946
+
+epoch 374
+epoch hitrate: 0.122750
+lifetime hitrate: 0.089036
+
+epoch 375
+epoch hitrate: 0.128733
+lifetime hitrate: 0.089142
+
+epoch 376
+epoch hitrate: 0.117537
+lifetime hitrate: 0.089218
+
+epoch 377
+epoch hitrate: 0.100402
+lifetime hitrate: 0.089247
+
+epoch 378
+epoch hitrate: 0.079272
+lifetime hitrate: 0.089221
+
+epoch 379
+epoch hitrate: 0.062554
+lifetime hitrate: 0.089151
+
+epoch 380
+epoch hitrate: 0.136313
+lifetime hitrate: 0.089275
+
+epoch 381
+epoch hitrate: 0.307794
+lifetime hitrate: 0.089848
+
+epoch 382
+epoch hitrate: 0.103993
+lifetime hitrate: 0.089885
+
+epoch 383
+epoch hitrate: 0.087800
+lifetime hitrate: 0.089880
+
+epoch 384
+epoch hitrate: 0.071654
+lifetime hitrate: 0.089832
+
+epoch 385
+epoch hitrate: 0.075306
+lifetime hitrate: 0.089795
+
+epoch 386
+epoch hitrate: 0.116228
+lifetime hitrate: 0.089863
+
+epoch 387
+epoch hitrate: 0.370522
+lifetime hitrate: 0.090588
+
+epoch 388
+epoch hitrate: 0.275800
+lifetime hitrate: 0.091066
+
+epoch 389
+epoch hitrate: 0.270822
+lifetime hitrate: 0.091528
+
+epoch 390
+epoch hitrate: 0.264009
+lifetime hitrate: 0.091970
+
+epoch 391
+epoch hitrate: 0.093420
+lifetime hitrate: 0.091974
+
+epoch 392
+epoch hitrate: 0.060376
+lifetime hitrate: 0.091893
+
+epoch 393
+epoch hitrate: 0.048770
+lifetime hitrate: 0.091784
+
+epoch 394
+epoch hitrate: 0.051017
+lifetime hitrate: 0.091680
+
+epoch 395
+epoch hitrate: 0.064167
+lifetime hitrate: 0.091610
+
+epoch 396
+epoch hitrate: 0.095861
+lifetime hitrate: 0.091621
+
+epoch 397
+epoch hitrate: 0.092659
+lifetime hitrate: 0.091624
+
+epoch 398
+epoch hitrate: 0.058157
+lifetime hitrate: 0.091540
+
+epoch 399
+epoch hitrate: 0.071843
+lifetime hitrate: 0.091490
+

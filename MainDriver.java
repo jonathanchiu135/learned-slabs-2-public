@@ -71,7 +71,7 @@ public class MainDriver {
 
     public static void main(String[] args) {
         try {
-            String overallRes = "./results3/overallRes.txt";
+            String overallRes = "./results5/overallRes.txt";
             BufferedWriter overallWriter = new BufferedWriter(new FileWriter(overallRes));
             for (int i = 1; i < 51; i++) {
                 String traceStringNum = i < 10 ? "0" + Integer.toString(i) : Integer.toString(i);
@@ -79,9 +79,9 @@ public class MainDriver {
                 // run the traces
                 System.out.println("processing " + traceStringNum);
                 String tracelink = "/mntData2/jason/cphy/w" + traceStringNum + ".oracleGeneral.bin";
-                String costBenefitRes =  "./results3/w" + traceStringNum + ".cost-benefit.txt";
-                String staticRes = "./results3/w" + traceStringNum + ".static-cache.txt";
-                String splicedRes = "./results3/w" + traceStringNum + ".spliced.txt";
+                String costBenefitRes =  "./results5/w" + traceStringNum + ".cost-benefit.txt";
+                String staticRes = "./results5/w" + traceStringNum + ".static-cache.txt";
+                String splicedRes = "./results5/w" + traceStringNum + ".spliced.txt";
                 
                 // cost-benefit analysis
                 AllocCostBenefit alloc = new AllocCostBenefit(tracelink, costBenefitRes);
@@ -105,15 +105,12 @@ public class MainDriver {
     results: no threshold
     results2: threshold 100
     results3: threshold 1000
+    results4: threshold 500
+    results5: threshold 3000
 */
-
-// more threshold values + visualize / plot which ones better
 
 // analyze how slabs move over time (move a bunch at beginning?)
     // maybe plot like "moves every 10 time steps"?
-
-
-
 
 // move least used -> to most used
 // to readjust (if not making a difference):
