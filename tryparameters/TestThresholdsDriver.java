@@ -100,6 +100,8 @@ public class TestThresholdsDriver {
             // dump the list of hitrates, as well as the final results for highest
             overallWriter.write("overall results: \n");
             writeIntArray(overallWriter, thresholds);
+            
+            overallWriter.write("hitrates per trace: \n");
             writeIntArray(overallWriter, times_highest);
             for (float[] hitrates : hitrates_per_trace) {
                 writeFloatArray(overallWriter, hitrates);
