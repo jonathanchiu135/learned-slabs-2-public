@@ -13,6 +13,12 @@ def get_hitrates(results_file):
     return cost_benefit_map, static_map
 
 # visualize how well static does on each trace
+# results: no threshold
+# results2: threshold 100
+# results3: threshold 1000
+# results4: threshold 500
+# results5: threshold 3000
+
 no_threshold_hitrates, static_hitrates = get_hitrates("overallRes1.txt")
 threshold_100_hitrates, _ = get_hitrates("overallRes2.txt")
 threshold_1000_hitrates, _ = get_hitrates("overallRes3.txt")

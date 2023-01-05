@@ -33,10 +33,6 @@ public class AllocCostBenefit {
             bb = ByteBuffer.wrap(next_time_buff);
             bb.order( ByteOrder.LITTLE_ENDIAN );
             this.next_time = bb.getLong();
-        
-            // this.id = ByteBuffer.wrap(id_buff).getLong();
-            // this.size = ByteBuffer.wrap(size_buff).getInt();
-            // this.next_time = ByteBuffer.wrap(next_time_buff).getLong();
         }
 
         // constructor: manually parse line from values and set here
@@ -73,7 +69,6 @@ public class AllocCostBenefit {
     BufferedInputStream reader;
     BufferedWriter writer;
     
- 
     // cache variables
     public HashMap<Integer, Integer> cacheUsedSpace;                    // maps sc to how much total space in sc
     public HashMap<Integer, LinkedHashMap<Long, CacheItem>> cacheLRU;   // maps sc to LRU list
@@ -176,11 +171,6 @@ public class AllocCostBenefit {
         slabClassLRU.put(line.id, new CacheItem(line.size, line.next_time));
     }
     
-
-    // move least used -> to most used
-    // just use purely hitrate to judge performance (don't scale by size)
-
-
     public void processLine(TraceLine line) {
         // if the item isn't going to fit in any slab class, just ignore it
         if (line.size > SLAB_SIZE) return;
@@ -260,23 +250,12 @@ public class AllocCostBenefit {
             }
 
             // move a slab from min to max slab class
-            String moved = "";
             if (min != -1 && min != max && minCB < MOVE_THRESHOLD) {
             // if (min != -1 && min != max) {
                 if (this.SLAB_COUNTS_MAP.get(min) != 0) {
                     moveSlab(min, max);
-                    moved = " (moved)";
                 }
             }   
-            
-            // write the hit rate over the last epoch to file
-            this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
-            // this.writer.write(String.format("moved slab from %d to %d\n", min, max));
-            // this.writer.write("cost / benefits: " + scToCB.toString() + "\n");
-            // this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
-            this.writer.write(String.format("epoch hitrate: %f\n", (float) this.epochhits / (float) LINES_READ_PER_CHUNK ));
-            this.writer.write(String.format("lifetime hitrate: %f\n", (float) this.lifetimehits / (float) this.t));    
-            this.writer.write("\n");
             this.epochhits = 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -284,7 +263,7 @@ public class AllocCostBenefit {
         }
     }
 
-    public void processTrace() {
+    public float processTrace() {
         try {
             TraceLine line;
             while((line = this.readTraceLine()) != null) {
@@ -299,6 +278,7 @@ public class AllocCostBenefit {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return (float) this.lifetimehits / (float) this.t;
     }
 
     // example how to run
@@ -307,11 +287,4 @@ public class AllocCostBenefit {
         alloc.processTrace();
     }
 }
-
-
-
-
-// play with parameters more + try to get better hitrates
-// slab class sizes -> 1.25 instead of doubling every time
-// plot allocation in each slab class over time: heat map
 
