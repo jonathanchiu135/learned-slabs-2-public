@@ -1,5 +1,23 @@
 /* 
- * Determines a slab allocation using cost/benefit analysis
+    Determines a slab allocation using cost/benefit analysis
+
+    Writes into specified output file using the following output format:
+        epoch 1 (moved)
+        epoch hitrate: 0.106820
+        lifetime hitrate: 0.106820
+
+        epoch 2 (moved)
+        epoch hitrate: 0.201539
+        lifetime hitrate: 0.154180
+
+        epoch 3 (moved)
+        epoch hitrate: 0.137139
+        lifetime hitrate: 0.148499
+
+        ...
+    
+    
+    
  */
 import java.util.*;
 import java.io.*;
@@ -33,10 +51,6 @@ public class AllocCostBenefit {
             bb = ByteBuffer.wrap(next_time_buff);
             bb.order( ByteOrder.LITTLE_ENDIAN );
             this.next_time = bb.getLong();
-        
-            // this.id = ByteBuffer.wrap(id_buff).getLong();
-            // this.size = ByteBuffer.wrap(size_buff).getInt();
-            // this.next_time = ByteBuffer.wrap(next_time_buff).getLong();
         }
 
         // constructor: manually parse line from values and set here
@@ -72,8 +86,7 @@ public class AllocCostBenefit {
     HashMap<Integer, Integer> SLAB_COUNTS_MAP;
     BufferedInputStream reader;
     BufferedWriter writer;
-    
- 
+
     // cache variables
     public HashMap<Integer, Integer> cacheUsedSpace;                    // maps sc to how much total space in sc
     public HashMap<Integer, LinkedHashMap<Long, CacheItem>> cacheLRU;   // maps sc to LRU list
@@ -271,9 +284,9 @@ public class AllocCostBenefit {
             
             // write the hit rate over the last epoch to file
             this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
-            // this.writer.write(String.format("moved slab from %d to %d\n", min, max));
-            // this.writer.write("cost / benefits: " + scToCB.toString() + "\n");
-            // this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
+            this.writer.write(String.format("moved slab from %d to %d\n", min, max));
+            this.writer.write("cost / benefits: " + scToCB.toString() + "\n");
+            this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
             this.writer.write(String.format("epoch hitrate: %f\n", (float) this.epochhits / (float) LINES_READ_PER_CHUNK ));
             this.writer.write(String.format("lifetime hitrate: %f\n", (float) this.lifetimehits / (float) this.t));    
             this.writer.write("\n");
@@ -303,7 +316,7 @@ public class AllocCostBenefit {
 
     // example how to run
     public static void main(String[] args) throws Exception {
-        AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/jason/cphy/w01.oracleGeneral.bin", "./exampleResults/w01.cost-benefit-threshold100.txt");
+        AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/jason/cphy/w13.oracleGeneral.bin", "./exampleResults/w13.cost-benefit-threshold100-dumpmaps.txt");
         alloc.processTrace();
     }
 }

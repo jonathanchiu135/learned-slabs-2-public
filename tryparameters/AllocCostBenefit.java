@@ -1,5 +1,6 @@
 /* 
- * Determines a slab allocation using cost/benefit analysis
+    Determines a slab allocation using cost/benefit analysis
+    Does not write into any result files; simply returns the final hitrate of the trace
  */
 import java.util.*;
 import java.io.*;
