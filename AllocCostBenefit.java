@@ -16,8 +16,8 @@
 
         ...
     
-    
-    
+
+
  */
 import java.util.*;
 import java.io.*;
@@ -76,7 +76,8 @@ public class AllocCostBenefit {
         16384, 32768, 65536, 131072, 262144, 524288, 1048576};
     public static int LINES_READ_PER_CHUNK = 540000;
     static int SLAB_SIZE = 1048576;
-    static int MOVE_THRESHOLD = 100;
+    // if C/B is above this value, "protect" it and don't move, even if it's the min
+    static int MOVE_THRESHOLD = 1000;      
 
     // class variables
     int t;
@@ -120,17 +121,34 @@ public class AllocCostBenefit {
         this.lifetimehits = 0;
 
         // set initial slab counts
+        // this.SLAB_COUNTS_MAP = new HashMap<>();
+        // this.SLAB_COUNTS_MAP.put(64, 16);
+        // this.SLAB_COUNTS_MAP.put(128, 8);
+        // this.SLAB_COUNTS_MAP.put(256, 8);
+        // this.SLAB_COUNTS_MAP.put(512, 4);
+        // this.SLAB_COUNTS_MAP.put(1024, 4);
+        // this.SLAB_COUNTS_MAP.put(2048, 3);
+        // this.SLAB_COUNTS_MAP.put(4096, 3);
+        // this.SLAB_COUNTS_MAP.put(8192, 2);
+        // this.SLAB_COUNTS_MAP.put(16384, 2);
+        // this.SLAB_COUNTS_MAP.put(32768, 2);
+        // this.SLAB_COUNTS_MAP.put(65536, 1);
+        // this.SLAB_COUNTS_MAP.put(131072, 1);
+        // this.SLAB_COUNTS_MAP.put(262144, 1);
+        // this.SLAB_COUNTS_MAP.put(524288, 1);
+        // this.SLAB_COUNTS_MAP.put(1048576, 1);
+
         this.SLAB_COUNTS_MAP = new HashMap<>();
-        this.SLAB_COUNTS_MAP.put(64, 16);
-        this.SLAB_COUNTS_MAP.put(128, 8);
-        this.SLAB_COUNTS_MAP.put(256, 8);
-        this.SLAB_COUNTS_MAP.put(512, 4);
-        this.SLAB_COUNTS_MAP.put(1024, 4);
-        this.SLAB_COUNTS_MAP.put(2048, 3);
-        this.SLAB_COUNTS_MAP.put(4096, 3);
-        this.SLAB_COUNTS_MAP.put(8192, 2);
-        this.SLAB_COUNTS_MAP.put(16384, 2);
-        this.SLAB_COUNTS_MAP.put(32768, 2);
+        this.SLAB_COUNTS_MAP.put(64, 1);
+        this.SLAB_COUNTS_MAP.put(128, 1);
+        this.SLAB_COUNTS_MAP.put(256, 1);
+        this.SLAB_COUNTS_MAP.put(512, 1);
+        this.SLAB_COUNTS_MAP.put(1024, 1);
+        this.SLAB_COUNTS_MAP.put(2048, 1);
+        this.SLAB_COUNTS_MAP.put(4096, 1);
+        this.SLAB_COUNTS_MAP.put(8192, 5);
+        this.SLAB_COUNTS_MAP.put(16384, 1);
+        this.SLAB_COUNTS_MAP.put(32768, 1);
         this.SLAB_COUNTS_MAP.put(65536, 1);
         this.SLAB_COUNTS_MAP.put(131072, 1);
         this.SLAB_COUNTS_MAP.put(262144, 1);
@@ -197,7 +215,7 @@ public class AllocCostBenefit {
     public void processLine(TraceLine line) {
         // if the item isn't going to fit in any slab class, just ignore it
         if (line.size > SLAB_SIZE) return;
-        
+
         // add to the cache
         int sc = getSlabClass(line.size);
         CacheItem oldItem = this.cacheLRU.get(sc).get(line.id);
@@ -266,7 +284,7 @@ public class AllocCostBenefit {
                     max = sc;
                     maxCB = scToCB.get(sc);
                 } 
-                if (scToCB.get(sc) <= minCB && this.SLAB_COUNTS_MAP.get(sc) > 0) {
+                if (scToCB.get(sc) <= minCB && this.SLAB_COUNTS_MAP.get(sc) > 1) {
                     min = sc;
                     minCB = scToCB.get(sc);
                 }
@@ -274,8 +292,8 @@ public class AllocCostBenefit {
 
             // move a slab from min to max slab class
             String moved = "";
-            if (min != -1 && min != max && minCB < MOVE_THRESHOLD) {
-            // if (min != -1 && min != max) {
+            // if (min != -1 && min != max && minCB < MOVE_THRESHOLD) {
+            if (min != -1 && min != max) {
                 if (this.SLAB_COUNTS_MAP.get(min) != 0) {
                     moveSlab(min, max);
                     moved = " (moved)";
@@ -284,7 +302,9 @@ public class AllocCostBenefit {
             
             // write the hit rate over the last epoch to file
             this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
-            this.writer.write(String.format("moved slab from %d to %d\n", min, max));
+            if (moved != "") {
+                this.writer.write(String.format("moved slab from %d to %d\n", min, max));
+            }
             this.writer.write("cost / benefits: " + scToCB.toString() + "\n");
             this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
             this.writer.write(String.format("epoch hitrate: %f\n", (float) this.epochhits / (float) LINES_READ_PER_CHUNK ));
@@ -304,6 +324,7 @@ public class AllocCostBenefit {
                 if (this.t % LINES_READ_PER_CHUNK == 0) {
                     this.collectStats();
                 }
+                // System.out.println(String.format("id: %d, size: %d", line.id, line.size));
                 this.processLine(line);
                 this.t++;
             }
@@ -316,7 +337,7 @@ public class AllocCostBenefit {
 
     // example how to run
     public static void main(String[] args) throws Exception {
-        AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/jason/cphy/w13.oracleGeneral.bin", "./exampleResults/w13.cost-benefit-threshold100-dumpmaps.txt");
+        AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/synthetic/synthetic_trace_256_1024", "./exampleResults/test_synthetic_256_1024_dumpmaps.txt");
         alloc.processTrace();
     }
 }
