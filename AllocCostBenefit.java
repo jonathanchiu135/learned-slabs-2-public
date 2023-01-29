@@ -337,7 +337,7 @@ public class AllocCostBenefit {
 
     // example how to run
     public static void main(String[] args) throws Exception {
-        AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/synthetic/synthetic_trace_256_1024", "./exampleResults/test_synthetic_256_1024_dumpmaps.txt");
+        AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/synthetic/synthetic_trace_256_1024", "./exampleResults/test_synthetic_256_1024_dumpmaps_2.txt");
         alloc.processTrace();
     }
 }
@@ -349,3 +349,16 @@ public class AllocCostBenefit {
 // slab class sizes -> 1.25 instead of doubling every time
 // plot allocation in each slab class over time: heat map
 
+
+
+// try using single epoch for entire trace, then use that allocation?
+
+// try just using hitcount per epoch?
+    // cost of moving slabs away?
+    // maybe just try for now, and maybe we can adjust for cost of movign slabs later
+
+    // sanity check: plot vs number of epochs (a lot of epochs == lots of moving == shoudl be low hitrate)
+    
+    
+// synthetic trace
+    // checkout number of requests per slab class (make sure looks normal?)
