@@ -1,6 +1,8 @@
 /* 
  * Simulates a static cache on the specified trace 
  */
+package tryparameters;
+
 import java.util.*;
 import java.io.*;
 import java.nio.*;

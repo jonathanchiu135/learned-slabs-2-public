@@ -1,14 +1,47 @@
 /* 
-    Determines a slab allocation using cost/benefit analysis
-    Does not write into any result files; simply returns the final hitrate of the trace
+    Determines a slab allocation using request-count analysis 
+
+    Simply count the number of requests for each slab in each epoch and move 
+    slabs to commonly-requested slab classes to unused ones. 
+
+    Naively always moves, without considering the cost of moving (evicting items
+    currently in the slab). Will add this consideration in the future. 
+
+    Slightly different from HRC analysis previously done. HRC analysis, in 
+    each epoch, for each slab class, computed the "HRC", which mapped each 
+    possible cache size "n" to the number of items with stack distance <= n (
+    since if the stack distance is smaller than a size, the cache will get a 
+    hit). Then, the "benefit" of moving to a slab class was the gain in items
+    that would get a hit by moving from cache_size to cache_size+slab. 
+
+    This strategy purely just looks at the number of requests for each slab 
+    class, and it will add in additional cost analysis later. 
+
+    For ease of use, also keep track of cache LRU information to calculate
+    hitrates as you go. 
+
+    Writes into specified output file using the following output format:
+        epoch 1 (moved)
+        epoch hitrate: 0.106820
+        lifetime hitrate: 0.106820
+
+        epoch 2 (moved)
+        epoch hitrate: 0.201539
+        lifetime hitrate: 0.154180
+
+        epoch 3 (moved)
+        epoch hitrate: 0.137139
+        lifetime hitrate: 0.148499
+
+        ...
  */
-package tryparameters;
+package reqcount;
 
 import java.util.*;
 import java.io.*;
 import java.nio.*;
 
-public class AllocCostBenefit {
+public class RequestCountAlloc {
 
     public static class TraceLine {
         // static variables
@@ -56,12 +89,12 @@ public class AllocCostBenefit {
         }
     }
 
-    // static variables: are 15 slab classes
+    // static variables: are 15 slab classes for now
     public static int[] SLAB_CLASSES = { 64, 128, 256, 512, 1024, 2048, 4096, 8192, 
         16384, 32768, 65536, 131072, 262144, 524288, 1048576};
+    public static int[] SLAB_COUNTS = { 16, 8, 8, 4, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1 };
     public static int LINES_READ_PER_CHUNK = 540000;
     static int SLAB_SIZE = 1048576;
-    static int MOVE_THRESHOLD = 100;
 
     // class variables
     int t;
@@ -71,7 +104,9 @@ public class AllocCostBenefit {
     HashMap<Integer, Integer> SLAB_COUNTS_MAP;
     BufferedInputStream reader;
     BufferedWriter writer;
-    
+    HashMap<Integer, Integer> numRequestsSC;   // maps sc -> #requests
+
+
     // cache variables
     public HashMap<Integer, Integer> cacheUsedSpace;                    // maps sc to how much total space in sc
     public HashMap<Integer, LinkedHashMap<Long, CacheItem>> cacheLRU;   // maps sc to LRU list
@@ -79,14 +114,14 @@ public class AllocCostBenefit {
     public int lifetimehits;
 
     // constructor
-    public AllocCostBenefit(String traceLink, String resultLink) {
+    public RequestCountAlloc(String traceLink, String resultLink) {
         // class variables
         this.t = 1;
         this.traceLink = traceLink;
         this.numLines = new File(this.traceLink).length() / 24;
         this.resultLink = resultLink;
 
-        // init readers and writers
+        // init readers and writers 
         try {
             this.reader = new BufferedInputStream(new FileInputStream(new File(this.traceLink)));
             this.writer = new BufferedWriter(new FileWriter(this.resultLink));
@@ -106,21 +141,9 @@ public class AllocCostBenefit {
 
         // set initial slab counts
         this.SLAB_COUNTS_MAP = new HashMap<>();
-        this.SLAB_COUNTS_MAP.put(64, 16);
-        this.SLAB_COUNTS_MAP.put(128, 8);
-        this.SLAB_COUNTS_MAP.put(256, 8);
-        this.SLAB_COUNTS_MAP.put(512, 4);
-        this.SLAB_COUNTS_MAP.put(1024, 4);
-        this.SLAB_COUNTS_MAP.put(2048, 3);
-        this.SLAB_COUNTS_MAP.put(4096, 3);
-        this.SLAB_COUNTS_MAP.put(8192, 2);
-        this.SLAB_COUNTS_MAP.put(16384, 2);
-        this.SLAB_COUNTS_MAP.put(32768, 2);
-        this.SLAB_COUNTS_MAP.put(65536, 1);
-        this.SLAB_COUNTS_MAP.put(131072, 1);
-        this.SLAB_COUNTS_MAP.put(262144, 1);
-        this.SLAB_COUNTS_MAP.put(524288, 1);
-        this.SLAB_COUNTS_MAP.put(1048576, 1);
+        for (int i = 0; i < SLAB_CLASSES.length; i++) {
+            this.SLAB_COUNTS_MAP.put(SLAB_CLASSES[i], SLAB_COUNTS[i]);
+        }
     }
 
     // static methods
@@ -152,7 +175,7 @@ public class AllocCostBenefit {
         return new TraceLine();
     }
 
-    // @requires: the item is contained in the sc
+    // requires the item is already contained in the sc
     public void removeFromCache(int sc, long id, CacheItem oldItem) {
         this.cacheUsedSpace.put(sc, this.cacheUsedSpace.get(sc) - oldItem.size);
         this.cacheLRU.get(sc).remove(id);
@@ -226,52 +249,57 @@ public class AllocCostBenefit {
         this.SLAB_COUNTS_MAP.put(min, this.SLAB_COUNTS_MAP.get(min) - 1);
     }
 
-    /*
-        Cost: indicator for if item accessed again
-        Benefit: amount of space "freed up" by moving slab away
-        Low C/B => more likely to move away 
-    */
-    public void collectStats() {
+    public void reviewEpochAndRealloc() {
         try {
-            // re-alloc the slabs based on cb analysis
-            Map<Integer, Float> scToCB = computeCBPerSlab();
-
             // calculate the min SC (where the SLAB_COUNTS is still > 0) and max SC
             int min = -1;
             int max = -1;
-            float maxCB = 0;
-            float minCB = Float.MAX_VALUE;
+            int maxReqCount = 0;
+            int minReqCount = Integer.MAX_VALUE;
+
             for (int sc : SLAB_CLASSES) {
-                if (scToCB.get(sc) >= maxCB) {
+                if (this.numRequestsSC.get(sc) >= maxReqCount) {
                     max = sc;
-                    maxCB = scToCB.get(sc);
+                    maxReqCount = numRequestsSC.get(sc);
                 } 
-                if (scToCB.get(sc) <= minCB && this.SLAB_COUNTS_MAP.get(sc) > 0) {
+                if (numRequestsSC.get(sc) <= minReqCount && this.SLAB_COUNTS_MAP.get(sc) > 0) {
                     min = sc;
-                    minCB = scToCB.get(sc);
+                    minReqCount = numRequestsSC.get(sc);
                 }
             }
 
             // move a slab from min to max slab class
-            if (min != -1 && min != max && minCB < MOVE_THRESHOLD) {
-            // if (min != -1 && min != max) {
+            String moved = "";
+            if (min != -1 && min != max) {
                 if (this.SLAB_COUNTS_MAP.get(min) != 0) {
                     moveSlab(min, max);
+                    moved = " (moved)";
                 }
             }   
+            
+            // write the hit rate over the last epoch to file
+            this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
+            if (!moved.equals("")) {
+                this.writer.write(String.format("moved slab from %d to %d\n", min, max));
+            }
+            this.writer.write("requests counts: " + numRequestsSC.toString() + "\n");
+            this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
+            this.writer.write(String.format("epoch hitrate: %f\n", (float) this.epochhits / (float) LINES_READ_PER_CHUNK ));
+            this.writer.write(String.format("lifetime hitrate: %f\n", (float) this.lifetimehits / (float) this.t));    
+            this.writer.write("\n");
             this.epochhits = 0;
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("error collecting stats");
+            System.out.println("error processing epoch and collecting stats");
         }
     }
 
-    public float processTrace() {
+    public void processTrace() {
         try {
             TraceLine line;
             while((line = this.readTraceLine()) != null) {
                 if (this.t % LINES_READ_PER_CHUNK == 0) {
-                    this.collectStats();
+                    this.reviewEpochAndRealloc();
                 }
                 this.processLine(line);
                 this.t++;
@@ -281,12 +309,11 @@ public class AllocCostBenefit {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return (float) this.lifetimehits / (float) this.t;
     }
 
     // example how to run
     public static void main(String[] args) throws Exception {
-        AllocCostBenefit alloc = new AllocCostBenefit("/mntData2/jason/cphy/w01.oracleGeneral.bin", "./exampleResults/w01.cost-benefit-threshold100.txt");
+        RequestCountAlloc alloc = new RequestCountAlloc("/mntData2/jason/cphy/w13.oracleGeneral.bin", "./exampleResults/w13.cost-benefit-threshold100-dumpmaps.txt");
         alloc.processTrace();
     }
 }
