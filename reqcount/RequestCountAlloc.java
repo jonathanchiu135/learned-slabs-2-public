@@ -21,6 +21,7 @@
     hitrates as you go. 
 
     Writes into specified output file using the following output format:
+
         epoch 1 (moved)
         epoch hitrate: 0.106820
         lifetime hitrate: 0.106820
@@ -34,8 +35,9 @@
         lifetime hitrate: 0.148499
 
         ...
+
+        (it is also possible to dump the maps with the slab allocations into trace)
  */
-package reqcount;
 
 import java.util.*;
 import java.io.*;
@@ -95,6 +97,7 @@ public class RequestCountAlloc {
     public static int[] SLAB_COUNTS = { 16, 8, 8, 4, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1 };
     public static int LINES_READ_PER_CHUNK = 540000;
     static int SLAB_SIZE = 1048576;
+    static int THRESHOLD_MULTIPLIER = 3;
 
     // class variables
     int t;
@@ -120,6 +123,10 @@ public class RequestCountAlloc {
         this.traceLink = traceLink;
         this.numLines = new File(this.traceLink).length() / 24;
         this.resultLink = resultLink;
+        this.numRequestsSC = new HashMap<Integer, Integer>();
+        for (int sc : SLAB_CLASSES) {
+            this.numRequestsSC.put(sc, 0);
+        }
 
         // init readers and writers 
         try {
@@ -211,28 +218,9 @@ public class RequestCountAlloc {
             this.removeFromCache(sc, line.id, oldItem);
         }
         this.addToCache(sc, line);
-    }
 
-    public Map<Integer, Float> computeCBPerSlab() {
-        Map<Integer, Float> scToCB = new HashMap<>();
-        for (int sc : SLAB_CLASSES) {
-            LinkedHashMap<Long, CacheItem> slabClassState = this.cacheLRU.get(sc);
-            Iterator<Map.Entry<Long, CacheItem>> it = slabClassState.entrySet().iterator();
-            float total_ratio = 0;
-            while (it.hasNext()) {
-                CacheItem item = it.next().getValue();
-
-                // since cost is in the numerator, if never accessed again, C/B = 0; just don't add
-                // add C/B per item (instead of accumulating all, then calculating C/B)
-                if (item.next_time != -1) {
-                    // divide by B
-                    long time_btw_access = (item.next_time == -1 ? this.numLines : item.next_time) - this.t;
-                    total_ratio += (float) ((10000000000.0 / time_btw_access) / sc);
-                }
-            }
-            scToCB.put(sc, total_ratio);
-        }
-        return scToCB;
+        // update requests counts
+        this.numRequestsSC.put(sc, this.numRequestsSC.get(sc) + 1);
     }
 
     public void moveSlab(int min, int max) {
@@ -253,6 +241,7 @@ public class RequestCountAlloc {
         try {
             // calculate the min SC (where the SLAB_COUNTS is still > 0) and max SC
             int min = -1;
+            int minNumSlabs = -1;
             int max = -1;
             int maxReqCount = 0;
             int minReqCount = Integer.MAX_VALUE;
@@ -262,15 +251,21 @@ public class RequestCountAlloc {
                     max = sc;
                     maxReqCount = numRequestsSC.get(sc);
                 } 
-                if (numRequestsSC.get(sc) <= minReqCount && this.SLAB_COUNTS_MAP.get(sc) > 0) {
+                if (numRequestsSC.get(sc) <= minReqCount 
+                    && this.SLAB_COUNTS_MAP.get(sc) > minNumSlabs
+                    && this.SLAB_COUNTS_MAP.get(sc) > 0) {
                     min = sc;
                     minReqCount = numRequestsSC.get(sc);
+                    minNumSlabs = this.SLAB_COUNTS_MAP.get(sc);
                 }
             }
 
             // move a slab from min to max slab class
             String moved = "";
-            if (min != -1 && min != max) {
+            if (min != -1 && min != max 
+                && this.numRequestsSC.get(min) * THRESHOLD_MULTIPLIER 
+                    < this.numRequestsSC.get(max)) {
+            // if (min != -1 && min != max) {
                 if (this.SLAB_COUNTS_MAP.get(min) != 0) {
                     moveSlab(min, max);
                     moved = " (moved)";
@@ -278,23 +273,29 @@ public class RequestCountAlloc {
             }   
             
             // write the hit rate over the last epoch to file
-            this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
-            if (!moved.equals("")) {
-                this.writer.write(String.format("moved slab from %d to %d\n", min, max));
-            }
-            this.writer.write("requests counts: " + numRequestsSC.toString() + "\n");
-            this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
-            this.writer.write(String.format("epoch hitrate: %f\n", (float) this.epochhits / (float) LINES_READ_PER_CHUNK ));
-            this.writer.write(String.format("lifetime hitrate: %f\n", (float) this.lifetimehits / (float) this.t));    
-            this.writer.write("\n");
+            // this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
+            // if (!moved.equals("")) {
+            //     this.writer.write(String.format("moved slab from %d to %d\n", min, max));
+            // }
+            // this.writer.write("requests counts: " + this.numRequestsSC.toString() + "\n");
+            // this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
+            // this.writer.write(String.format("epoch hitrate: %f\n", (float) this.epochhits / (float) LINES_READ_PER_CHUNK ));
+            // this.writer.write(String.format("lifetime hitrate: %f\n", (float) this.lifetimehits / (float) this.t));    
+            // this.writer.write("\n");
+
+            // reset epoch data structures
             this.epochhits = 0;
+            this.numRequestsSC = new HashMap<Integer, Integer>();
+            for (int sc : SLAB_CLASSES) {
+                this.numRequestsSC.put(sc, 0);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("error processing epoch and collecting stats");
         }
     }
 
-    public void processTrace() {
+    public float processTrace() {
         try {
             TraceLine line;
             while((line = this.readTraceLine()) != null) {
@@ -309,11 +310,13 @@ public class RequestCountAlloc {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return (float) this.lifetimehits / (float) this.t;
     }
 
     // example how to run
     public static void main(String[] args) throws Exception {
-        RequestCountAlloc alloc = new RequestCountAlloc("/mntData2/jason/cphy/w13.oracleGeneral.bin", "./exampleResults/w13.cost-benefit-threshold100-dumpmaps.txt");
+        RequestCountAlloc alloc = new RequestCountAlloc("/mntData2/jason/cphy/w13.oracleGeneral.bin", 
+                "./reqcount_results/w13.reqcount.txt");
         alloc.processTrace();
     }
 }
