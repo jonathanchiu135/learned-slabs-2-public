@@ -17,26 +17,8 @@
     This strategy purely just looks at the number of requests for each slab 
     class, and it will add in additional cost analysis later. 
 
-    For ease of use, also keep track of cache LRU information to calculate
-    hitrates as you go. 
-
-    Writes into specified output file using the following output format:
-
-        epoch 1 (moved)
-        epoch hitrate: 0.106820
-        lifetime hitrate: 0.106820
-
-        epoch 2 (moved)
-        epoch hitrate: 0.201539
-        lifetime hitrate: 0.154180
-
-        epoch 3 (moved)
-        epoch hitrate: 0.137139
-        lifetime hitrate: 0.148499
-
-        ...
-
-        (it is also possible to dump the maps with the slab allocations into trace)
+    Returns an ArrayList<HashMap<Integer, Integer>> describing how many slabs
+    should be allocated for each slab class at each epoch. 
  */
 
 import java.util.*;
@@ -81,16 +63,6 @@ public class RequestCountAlloc {
         }
     }
 
-    public class CacheItem { 
-        int size;
-        long next_time;
-
-        public CacheItem(int size, long next_time) {
-            this.size = size;
-            this.next_time = next_time;
-        }
-    }
-
     // static variables: are 15 slab classes for now
     public static int[] SLAB_CLASSES = { 64, 128, 256, 512, 1024, 2048, 4096, 8192, 
         16384, 32768, 65536, 131072, 262144, 524288, 1048576};
@@ -109,12 +81,7 @@ public class RequestCountAlloc {
     BufferedWriter writer;
     HashMap<Integer, Integer> numRequestsSC;   // maps sc -> #requests
 
-
-    // cache variables
-    public HashMap<Integer, Integer> cacheUsedSpace;                    // maps sc to how much total space in sc
-    public HashMap<Integer, LinkedHashMap<Long, CacheItem>> cacheLRU;   // maps sc to LRU list
-    public int epochhits;
-    public int lifetimehits;
+    ArrayList<HashMap<Integer, Integer>> traceSlabAllocations;
 
     // constructor
     public RequestCountAlloc(String traceLink, String resultLink) {
@@ -136,21 +103,12 @@ public class RequestCountAlloc {
             e.printStackTrace();
         }
 
-        // cache variables
-        this.cacheUsedSpace = new HashMap<>();
-        this.cacheLRU = new HashMap<>();
-        for (int sc : SLAB_CLASSES) {
-            this.cacheUsedSpace.put(sc, 0);
-            this.cacheLRU.put(sc, new LinkedHashMap<Long, CacheItem>());
-        }
-        this.epochhits = 0;
-        this.lifetimehits = 0;
-
         // set initial slab counts
         this.SLAB_COUNTS_MAP = new HashMap<>();
         for (int i = 0; i < SLAB_CLASSES.length; i++) {
             this.SLAB_COUNTS_MAP.put(SLAB_CLASSES[i], SLAB_COUNTS[i]);
         }
+        this.traceSlabAllocations = new ArrayList<>();
     }
 
     // static methods
@@ -181,58 +139,17 @@ public class RequestCountAlloc {
         if (this.reader.read(TraceLine.next_time_buff) == -1) return null;
         return new TraceLine();
     }
-
-    // requires the item is already contained in the sc
-    public void removeFromCache(int sc, long id, CacheItem oldItem) {
-        this.cacheUsedSpace.put(sc, this.cacheUsedSpace.get(sc) - oldItem.size);
-        this.cacheLRU.get(sc).remove(id);
-    }
-
-    public void addToCache(int sc, TraceLine line) {
-        // remove until there is enough space in the sc
-        if (line.size > this.SLAB_COUNTS_MAP.get(sc) * SLAB_SIZE) {
-            return;
-        }
-        LinkedHashMap<Long, CacheItem> slabClassLRU = this.cacheLRU.get(sc);
-        Iterator<Long> it = slabClassLRU.keySet().iterator();
-        while (this.cacheUsedSpace.get(sc) + line.size > this.SLAB_COUNTS_MAP.get(sc) * SLAB_SIZE) {
-            Long removeItemId = it.next();
-            this.cacheUsedSpace.put(sc, this.cacheUsedSpace.get(sc) - slabClassLRU.get(removeItemId).size);
-            it.remove();
-        }
-        this.cacheUsedSpace.put(sc, this.cacheUsedSpace.get(sc) + line.size);
-        slabClassLRU.put(line.id, new CacheItem(line.size, line.next_time));
-    }
     
     public void processLine(TraceLine line) {
         // if the item isn't going to fit in any slab class, just ignore it
         if (line.size > SLAB_SIZE) return;
-        
-        // add to the cache
-        int sc = getSlabClass(line.size);
-        CacheItem oldItem = this.cacheLRU.get(sc).get(line.id);
-        if (oldItem != null) {
-            // assumes that objects cannot change sc (if does, will still count as hit)
-            this.lifetimehits++;
-            this.epochhits++;
-            this.removeFromCache(sc, line.id, oldItem);
-        }
-        this.addToCache(sc, line);
 
         // update requests counts
+        int sc = getSlabClass(line.size);
         this.numRequestsSC.put(sc, this.numRequestsSC.get(sc) + 1);
     }
 
     public void moveSlab(int min, int max) {
-        // drop items from the LRU until have enough space to remove a slab 
-        LinkedHashMap<Long, CacheItem> slabClassLRU = this.cacheLRU.get(min);
-        Iterator<Long> it = slabClassLRU.keySet().iterator();
-        while (this.SLAB_COUNTS_MAP.get(min) * SLAB_SIZE - this.cacheUsedSpace.get(min) < SLAB_SIZE) {
-            Long removeItemId = it.next();
-            this.cacheUsedSpace.put(min, this.cacheUsedSpace.get(min) - slabClassLRU.get(removeItemId).size);
-            it.remove();
-        }
-
         this.SLAB_COUNTS_MAP.put(max, this.SLAB_COUNTS_MAP.get(max) + 1);
         this.SLAB_COUNTS_MAP.put(min, this.SLAB_COUNTS_MAP.get(min) - 1);
     }
@@ -271,6 +188,8 @@ public class RequestCountAlloc {
                     moved = " (moved)";
                 }
             }   
+            this.traceSlabAllocations.add((HashMap<Integer, Integer>) 
+                                            SLAB_COUNTS_MAP.clone());
             
             // write the hit rate over the last epoch to file
             // this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
@@ -284,7 +203,6 @@ public class RequestCountAlloc {
             // this.writer.write("\n");
 
             // reset epoch data structures
-            this.epochhits = 0;
             this.numRequestsSC = new HashMap<Integer, Integer>();
             for (int sc : SLAB_CLASSES) {
                 this.numRequestsSC.put(sc, 0);

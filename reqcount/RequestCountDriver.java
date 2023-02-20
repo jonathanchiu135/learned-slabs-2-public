@@ -16,6 +16,15 @@
         .2 .3 .4 .1 .2 ...
         ...
     ]
+
+    increase number of slabs hitrate should be ~50%
+    actually use future info (instead of past)
+
+    track number of migrations per threshold / plot values to see if higher (box plot)
+
+    test with shorter epochs
+        can actually see the effect of the cost (longer is less)
+        and after that we can accoutn for penaly
 */
 import java.util.*;
 import java.io.*;
