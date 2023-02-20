@@ -3,6 +3,35 @@ import java.io.*;
 import java.nio.file.*;
 
 public class CacheSimDynamic {
+
+    public static class TraceLine {
+        // static variables
+        static byte[] id_buff = new byte[8];
+        static byte[] size_buff = new byte[4];
+
+        // class variables
+        long id;
+        int size;
+
+        // constructor: parse numbers from whatever is stored in static arrs
+        public TraceLine() {
+            ByteBuffer bb;
+
+            bb = ByteBuffer.wrap(id_buff);
+            bb.order( ByteOrder.LITTLE_ENDIAN );
+            this.id = bb.getLong();
+
+            bb = ByteBuffer.wrap(size_buff);
+            bb.order( ByteOrder.LITTLE_ENDIAN );
+            this.size = bb.getInt();
+        }
+
+        // constructor: manually parse line from values and set here
+        public TraceLine(long id, int size, long next_time) {
+            this.id = id;
+            this.size = size;
+        }
+    }
     
     public static int[] SLAB_SIZES = {64, 128, 256, 512, 1024, 2048, 4096, 8192, 
         16384, 32768, 65536, 131072, 262144, 524288, 1048576};
@@ -44,6 +73,13 @@ public class CacheSimDynamic {
             this.cacheUsedSpace.put(sc, 0);
             this.cacheLRU.put(sc, new LinkedHashSet<Long>());
         }
+        
+        try {
+            this.reader = new BufferedInputStream(new FileInputStream(new File(traceLink)));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void initCache() {
@@ -54,6 +90,18 @@ public class CacheSimDynamic {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public TraceLine readTraceLine() throws IOException {
+        // discard the first 4 bytes (actual time)
+        if (this.reader.read(TraceLine.size_buff) == -1) return null;
+
+        // read the next fields from the trace
+        if (this.reader.read(TraceLine.id_buff) == -1) return null;
+        if (this.reader.read(TraceLine.size_buff) == -1) return null;
+        this.reader.skip(8);
+
+        return new TraceLine();
     }
 
     public HashMap<Integer, Integer> getNextSlabAllocation() {
@@ -144,11 +192,14 @@ public class CacheSimDynamic {
         this.cacheLRU.get(sc).add(id);
     }
 
-    public void processLine(String line) {
+    public void processLine(TraceLine line) {
         // parse the line for id and size
-        String[] itemArr = line.split(",");
-        long id = Long.parseLong(itemArr[1]);
-        int size = Integer.parseInt(itemArr[2]) + Integer.parseInt(itemArr[3]);
+        // String[] itemArr = line.split(",");
+        // long id = Long.parseLong(itemArr[1]);
+        long id = line.id;
+        int size = line.size;
+
+        // int size = Integer.parseInt(itemArr[2]) + Integer.parseInt(itemArr[3]);
         int sc = getSlabClass(size);
 
         // re-evaluate slab allocation and re-allocate if necessary
@@ -187,11 +238,10 @@ public class CacheSimDynamic {
     // driver function for looping through trace
     public float calculateHitRate() {
         this.initCache();
-        
-        BufferedReader trace = this.openTrace();
+
         try {
-            String line;
-            while((line = trace.readLine()) != null) {
+            TraceLine line;
+            while((line = this.readTraceLine()) != null) {
                 this.processLine(line);
             }
         } catch (Exception e) {
