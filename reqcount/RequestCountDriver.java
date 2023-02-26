@@ -67,13 +67,16 @@ public class RequestCountDriver {
     }
     public static void main(String[] args) {
         try {
-            String overallRes = "./reqcount_results/overall-results.txt";
+            String overallRes = "./reqcount_results/overall-results-future-epoch-test.txt";
             BufferedWriter overallWriter = new BufferedWriter(new FileWriter(overallRes));
-            int[] thresholds = new int[] {-1, 0, 1, 2, 3, 4, 5, 10, 50};
-            int[] times_highest = new int[thresholds.length];
+            // int[] thresholds = new int[] {-1, 0, 1, 2, 3, 4, 5, 10, 50};
+            int[] epoch_lengths = new int[] { -1, 540000, 1080000, 270000, 135000, 67500, 33750 };
+            // int[] epoch_lengths = new int[] { -1, 540000, 270000 };
+            
+            int[] times_highest = new int[epoch_lengths.length];
             ArrayList<ArrayList<Float>> hitrates_per_trace = new ArrayList<>();
             for (int i = 1; i < 51; i++) {
-                ArrayList<Float> threshold_hitrates = new ArrayList<>();
+                ArrayList<Float> param_hitrates = new ArrayList<>();
 
                 // run trace i using each of the thresholds
                 String traceStringNum = i < 10 ? "0" + Integer.toString(i) : Integer.toString(i);
@@ -81,41 +84,51 @@ public class RequestCountDriver {
                 String tracelink = "/mntData2/jason/cphy/w" + traceStringNum + ".oracleGeneral.bin";
                 String trash = "./trash.txt";
                 
-                for (int j = 0; j < thresholds.length; j++) {
-                    System.out.println(String.format("threshold: %d", thresholds[j]));
+                for (int j = 0; j < epoch_lengths.length; j++) {
+                    System.out.println(String.format("epoch_lengths: %d", epoch_lengths[j]));
                     if (j == 0) {
                         // run the static alloc
+                        CacheSimulatorStatic.LINES_READ_PER_CHUNK = 540000;
                         CacheSimulatorStatic currCache = new CacheSimulatorStatic(tracelink, trash, initSlabAlloc());
-                        threshold_hitrates.add(currCache.calculateHitRate());
+                        param_hitrates.add(currCache.calculateHitRate());
                     } else {
                         // run the request-count alloc
-                        RequestCountAlloc.THRESHOLD_MULTIPLIER = thresholds[j];
-                        RequestCountAlloc alloc = new RequestCountAlloc(tracelink, trash);
-                        threshold_hitrates.add(alloc.processTrace());
+                        RequestCountAlloc.LINES_READ_PER_CHUNK = epoch_lengths[j];
+                        RequestCountAllocFuture alloc = new RequestCountAllocFuture(tracelink, trash);
+                        ArrayList<HashMap<Integer, Integer>> slabAlloc = alloc.processTrace();
+
+                        // simulate the cache
+                        CacheSimDynamic.LINES_READ_PER_CHUNK = epoch_lengths[j];
+                        CacheSimDynamic currCache = new CacheSimDynamic(tracelink, trash, slabAlloc);
+                        param_hitrates.add(currCache.calculateHitRate());
+                                              
+                        // RequestCountAlloc.LINES_READ_PER_CHUNK = epoch_lengths[j];
+                        // RequestCountAlloc alloc = new RequestCountAlloc(tracelink, trash);
+                        // param_hitrates.add(alloc.processTrace());
                     }
                 }
                 
-                // increment counters for the thresholds that created the max
-                ArrayList<Integer> maxThresholds = new ArrayList<>();
+                // increment counters for the epochs that created the max
+                ArrayList<Integer> maxparams = new ArrayList<>();
                 float max = -1;
-                for (int j = 0; j < threshold_hitrates.size(); j++) {
-                    if (threshold_hitrates.get(j) > max) {
-                        max = threshold_hitrates.get(j);
-                        maxThresholds.clear();
-                        maxThresholds.add(j);
-                    } else if (threshold_hitrates.get(j) == max) {
-                        maxThresholds.add(j);
+                for (int j = 0; j < param_hitrates.size(); j++) {
+                    if (param_hitrates.get(j) > max) {
+                        max = param_hitrates.get(j);
+                        maxparams.clear();
+                        maxparams.add(j);
+                    } else if (param_hitrates.get(j) == max) {
+                        maxparams.add(j);
                     } 
                 }
-                for (int j : maxThresholds) {
+                for (int j : maxparams) {
                     times_highest[j]++;
                 }            
-                hitrates_per_trace.add(threshold_hitrates);
+                hitrates_per_trace.add(param_hitrates);
             }
 
             // dump the list of hitrates, as well as the final results for highest
             overallWriter.write("overall results: \n");
-            writeIntArray(overallWriter, thresholds);
+            writeIntArray(overallWriter, epoch_lengths);
             writeIntArray(overallWriter, times_highest);
             overallWriter.write("\nhitrates per trace: \n");
             for (ArrayList<Float> hitrates : hitrates_per_trace) {
