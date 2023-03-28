@@ -57,7 +57,15 @@ public class RequestCountDriver {
             e.printStackTrace();
         }
     }
-    public static void writeFloatArray(BufferedWriter overallWriter, ArrayList<Float> arr) {
+    public static void writeFloatArray(BufferedWriter overallWriter, float[] arr) {
+        try {
+            for (float i : arr) overallWriter.write(String.valueOf(i) + " ");
+            overallWriter.write("\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public static void writeFloatArrayList(BufferedWriter overallWriter, ArrayList<Float> arr) {
         try {
             for (float i : arr) overallWriter.write(String.valueOf(i) + " ");
             overallWriter.write("\n");
@@ -67,13 +75,17 @@ public class RequestCountDriver {
     }
     public static void main(String[] args) {
         try {
-            String overallRes = "./reqcount_results/overall-results-future-epoch-test.txt";
+            String overallRes = "./reqcount_results/overall-results-future-2.txt";
             BufferedWriter overallWriter = new BufferedWriter(new FileWriter(overallRes));
             // int[] thresholds = new int[] {-1, 0, 1, 2, 3, 4, 5, 10, 50};
-            int[] epoch_lengths = new int[] { -1, 540000, 1080000, 270000, 135000, 67500, 33750 };
+            int[] epoch_lengths = new int[] { -1, 1080000, 540000, 270000, 135000, 67500, 33750, 16875, 8437, 4218, 2109, 1054, 528, 264 };
+            // int[] epoch_lengths = new int[] { -1, 4218, 2109, 1054, 527 };
+            // int[] epoch_lengths = new int[] { -1, 2109 };
             // int[] epoch_lengths = new int[] { -1, 540000, 270000 };
             
             int[] times_highest = new int[epoch_lengths.length];
+            float[] distFromHighest = new float[epoch_lengths.length];
+            
             ArrayList<ArrayList<Float>> hitrates_per_trace = new ArrayList<>();
             for (int i = 1; i < 51; i++) {
                 ArrayList<Float> param_hitrates = new ArrayList<>();
@@ -93,7 +105,7 @@ public class RequestCountDriver {
                         param_hitrates.add(currCache.calculateHitRate());
                     } else {
                         // run the request-count alloc
-                        RequestCountAlloc.LINES_READ_PER_CHUNK = epoch_lengths[j];
+                        RequestCountAllocFuture.LINES_READ_PER_CHUNK = epoch_lengths[j];
                         RequestCountAllocFuture alloc = new RequestCountAllocFuture(tracelink, trash);
                         ArrayList<HashMap<Integer, Integer>> slabAlloc = alloc.processTrace();
 
@@ -123,16 +135,21 @@ public class RequestCountDriver {
                 for (int j : maxparams) {
                     times_highest[j]++;
                 }            
+                for (int j = 0; j < param_hitrates.size(); j++) {
+                    distFromHighest[j] += Math.abs(max - param_hitrates.get(j));
+                }
                 hitrates_per_trace.add(param_hitrates);
             }
+            for (int i = 0; i < distFromHighest.length; i++) distFromHighest[i] = distFromHighest[i] / 50;
 
             // dump the list of hitrates, as well as the final results for highest
             overallWriter.write("overall results: \n");
             writeIntArray(overallWriter, epoch_lengths);
             writeIntArray(overallWriter, times_highest);
+            writeFloatArray(overallWriter, distFromHighest);
             overallWriter.write("\nhitrates per trace: \n");
             for (ArrayList<Float> hitrates : hitrates_per_trace) {
-                writeFloatArray(overallWriter, hitrates);
+                writeFloatArrayList(overallWriter, hitrates);
             }
             overallWriter.close();
         } catch (Exception e) {

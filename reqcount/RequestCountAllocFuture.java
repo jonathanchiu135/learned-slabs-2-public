@@ -67,7 +67,9 @@ public class RequestCountAllocFuture {
     public static int[] SLAB_CLASSES = { 64, 128, 256, 512, 1024, 2048, 4096, 8192, 
         16384, 32768, 65536, 131072, 262144, 524288, 1048576};
     public static int[] SLAB_COUNTS = { 16, 8, 8, 4, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1 };
-    public static int LINES_READ_PER_CHUNK = 540000;
+    // public static int LINES_READ_PER_CHUNK = 540000;
+    public static int LINES_READ_PER_CHUNK = 4218;
+    
     static int SLAB_SIZE = 1048576;
     static int THRESHOLD_MULTIPLIER = 3;
 
@@ -191,22 +193,9 @@ public class RequestCountAllocFuture {
             this.traceSlabAllocations.add((HashMap<Integer, Integer>) 
                                             SLAB_COUNTS_MAP.clone());
             
-            // write the hit rate over the last epoch to file
-            // this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
-            // if (!moved.equals("")) {
-            //     this.writer.write(String.format("moved slab from %d to %d\n", min, max));
-            // }
-            // this.writer.write("requests counts: " + this.numRequestsSC.toString() + "\n");
-            // this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
-            // this.writer.write(String.format("epoch hitrate: %f\n", (float) this.epochhits / (float) LINES_READ_PER_CHUNK ));
-            // this.writer.write(String.format("lifetime hitrate: %f\n", (float) this.lifetimehits / (float) this.t));    
-            // this.writer.write("\n");
-
             // reset epoch data structures
             this.numRequestsSC = new HashMap<Integer, Integer>();
-            for (int sc : SLAB_CLASSES) {
-                this.numRequestsSC.put(sc, 0);
-            }
+            for (int sc : SLAB_CLASSES) this.numRequestsSC.put(sc, 0);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("error processing epoch and collecting stats");
@@ -233,8 +222,8 @@ public class RequestCountAllocFuture {
 
     // example how to run
     public static void main(String[] args) throws Exception {
-        RequestCountAllocFuture alloc = new RequestCountAllocFuture("/mntData2/jason/cphy/w13.oracleGeneral.bin", 
-                "./reqcount_results/trash.txt");
+        RequestCountAllocFuture alloc = new RequestCountAllocFuture("/mntData2/jason/cphy/w01.oracleGeneral.bin", 
+                "./reqcount_results/trash.txt"); 
         System.out.println(alloc.processTrace());
     }
 }
