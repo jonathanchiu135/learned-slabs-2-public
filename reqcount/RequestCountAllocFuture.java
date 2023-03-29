@@ -192,6 +192,16 @@ public class RequestCountAllocFuture {
             }   
             this.traceSlabAllocations.add((HashMap<Integer, Integer>) 
                                             SLAB_COUNTS_MAP.clone());
+
+                                               
+            // write the hit rate over the last epoch to file
+            this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
+            // if (!moved.equals("")) {
+            //     this.writer.write(String.format("moved slab from %d to %d\n", min, max));
+            // }
+            // this.writer.write("requests counts: " + this.numRequestsSC.toString() + "\n");
+            // this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
+            // this.writer.write("\n");
             
             // reset epoch data structures
             this.numRequestsSC = new HashMap<Integer, Integer>();

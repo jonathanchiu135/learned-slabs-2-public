@@ -1,0 +1,7 @@
+overall results: 
+-1 132 
+1 0 
+0.0 0.0 
+
+hitrates per trace: 
+0.091419235 
