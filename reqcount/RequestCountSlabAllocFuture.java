@@ -203,6 +203,7 @@ public class RequestCountSlabAllocFuture {
             // move a slab from min to max slab class
             String moved = "";
             if (minUtil != Integer.MAX_VALUE
+                && highestLastUtil != -1
                 && minUtilSC != highestLastUtilSC
                 && this.SLAB_COUNTS_MAP.get(minUtilSC) != 0) {
                 moveSlab(minUtilSC, highestLastUtilSC);
