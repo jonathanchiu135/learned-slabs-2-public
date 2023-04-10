@@ -58,8 +58,8 @@ public class RequestCountSlabAllocFuture {
     public static int[] SLAB_CLASSES = { 64, 128, 256, 512, 1024, 2048, 4096, 8192, 
         16384, 32768, 65536, 131072, 262144, 524288, 1048576};
     public static int[] SLAB_COUNTS = { 16, 8, 8, 4, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1 };
-    // public static int LINES_READ_PER_CHUNK = 540000;
-    public static int LINES_READ_PER_CHUNK = 4218;
+    public static int LINES_READ_PER_CHUNK = 540000;
+    // public static int LINES_READ_PER_CHUNK = 4218;
     
     static int SLAB_SIZE = 1048576;
     static int THRESHOLD_MULTIPLIER = 3;
@@ -80,12 +80,12 @@ public class RequestCountSlabAllocFuture {
     public RequestCountSlabAllocFuture(String traceLink, String resultLink) {
         // class variables
         this.t = 1;
-        this.numLines = new File(this.traceLink).length() / 24;
         this.traceLink = traceLink;
         this.resultLink = resultLink;
+        this.numLines = new File(this.traceLink).length() / 24;
         this.LRUPerSC = new HashMap<>();
         for (int sc : SLAB_CLASSES) {
-            this.numRequestsSC.put(sc, new LinkedHashMap<>());
+            this.LRUPerSC.put(sc, new LinkedHashMap<>());
         }
 
         // init readers and writers 
@@ -223,8 +223,9 @@ public class RequestCountSlabAllocFuture {
             // this.writer.write("\n");
             
             // reset epoch data structures
-            this.numRequestsSC = new HashMap<Integer, Integer>();
-            for (int sc : SLAB_CLASSES) this.numRequestsSC.put(sc, 0);
+
+            this.LRUPerSC = new HashMap<>();
+            for (int sc : SLAB_CLASSES) this.LRUPerSC.put(sc, new LinkedHashMap<>());
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("error processing epoch and collecting stats");

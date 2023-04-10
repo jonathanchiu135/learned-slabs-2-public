@@ -75,21 +75,20 @@ public class RequestCountDriver {
     }
     public static void main(String[] args) {
         try {
-            // String overallRes = "./reqcount_results/overall-results-future-3.txt";
-            String overallRes = "./reqcount_results/trash2.txt";
+            String overallRes = "./reqcount_slab_results/results-slab-1.txt";
+            // String overallRes = "./reqcount_results/trash2.txt";
             BufferedWriter overallWriter = new BufferedWriter(new FileWriter(overallRes));
             // int[] thresholds = new int[] {-1, 0, 1, 2, 3, 4, 5, 10, 50};
-            // int[] epoch_lengths = new int[] { -1, 1080000, 540000, 270000, 135000, 67500, 33750, 16875, 8437, 4218, 2109, 1054, 528, 264, 132, 66, 33, 16, 8 };
+            int[] epoch_lengths = new int[] { -1, 1080000, 540000 };
             // int[] epoch_lengths = new int[] { -1, 4218, 2109, 1054, 527 };
-            int[] epoch_lengths = new int[] { -1, 132 };
-            // int[] epoch_lengths = new int[] { -1, 540000, 270000 };
+            // int[] epoch_lengths = new int[] { -1, 132 };
+            // int[] epoch_lengths = new int[] { -1, 1080000, 540000 };
             
             int[] times_highest = new int[epoch_lengths.length];
             float[] distFromHighest = new float[epoch_lengths.length];
             
             ArrayList<ArrayList<Float>> hitrates_per_trace = new ArrayList<>();
-            for (int i = 10; i < 11; i++) {
-                if (i != 10 && i != 23) continue;
+            for (int i = 1; i < 51; i++) {
                 ArrayList<Float> param_hitrates = new ArrayList<>();
 
                 // run trace i using each of the thresholds
@@ -97,19 +96,18 @@ public class RequestCountDriver {
                 System.out.println("processing " + traceStringNum);
                 String tracelink = "/mntData2/jason/cphy/w" + traceStringNum + ".oracleGeneral.bin";
                 String trash = "./trash.txt";
-                String trash2 = "./trace10-epoch132-allocation.txt";
-                
+
                 for (int j = 0; j < epoch_lengths.length; j++) {
                     // System.out.println(String.format("epoch_lengths: %d", epoch_lengths[j]));
                     if (j == 0) {
-                        // // run the static alloc
-                        // CacheSimulatorStatic.LINES_READ_PER_CHUNK = 540000;
-                        // CacheSimulatorStatic currCache = new CacheSimulatorStatic(tracelink, trash, initSlabAlloc());
-                        // param_hitrates.add(currCache.calculateHitRate());
+                        // run the static alloc
+                        CacheSimulatorStatic.LINES_READ_PER_CHUNK = 540000;
+                        CacheSimulatorStatic currCache = new CacheSimulatorStatic(tracelink, trash, initSlabAlloc());
+                        param_hitrates.add(currCache.calculateHitRate());
                     } else {
                         // run the request-count alloc
-                        RequestCountAllocFuture.LINES_READ_PER_CHUNK = epoch_lengths[j];
-                        RequestCountAllocFuture alloc = new RequestCountAllocFuture(tracelink, trash2);
+                        RequestCountSlabAllocFuture.LINES_READ_PER_CHUNK = epoch_lengths[j];
+                        RequestCountSlabAllocFuture alloc = new RequestCountSlabAllocFuture(tracelink, trash);
                         ArrayList<HashMap<Integer, Integer>> slabAlloc = alloc.processTrace();
 
                         // simulate the cache

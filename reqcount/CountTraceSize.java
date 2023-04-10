@@ -1,24 +1,9 @@
 /* 
-    Determines a slab allocation using request-count analysis 
+    Counts the amount of bytes needed to store all items in a trace.
 
-    Simply count the number of requests for each slab in each epoch and move 
-    slabs to commonly-requested slab classes to unused ones. 
+    trace 01: 682842924032
+        10% = 65120 slabs of size 1048576
 
-    Naively always moves, without considering the cost of moving (evicting items
-    currently in the slab). Will add this consideration in the future. 
-
-    Slightly different from HRC analysis previously done. HRC analysis, in 
-    each epoch, for each slab class, computed the "HRC", which mapped each 
-    possible cache size "n" to the number of items with stack distance <= n (
-    since if the stack distance is smaller than a size, the cache will get a 
-    hit). Then, the "benefit" of moving to a slab class was the gain in items
-    that would get a hit by moving from cache_size to cache_size+slab. 
-
-    This strategy purely just looks at the number of requests for each slab 
-    class, and it will add in additional cost analysis later. 
-
-    Returns an ArrayList<HashMap<Integer, Integer>> describing how many slabs
-    should be allocated for each slab class at each epoch. 
  */
 
 import java.util.*;
@@ -63,15 +48,18 @@ public class CountTraceSize {
         }
     }
 
+    static int SLAB_SIZE = 1048576;
+
     // class variables
     String traceLink;
     HashMap<Long, Integer> item_sizes;
     BufferedInputStream reader;
-    
+
     // constructor
     public CountTraceSize(String traceLink) {
         // class variables
-        this.item_sizes = new HashMap<Integer, Integer>();
+        this.item_sizes = new HashMap<Long, Integer>();
+        this.traceLink = traceLink;
 
         // init readers and writers 
         try {
@@ -79,23 +67,6 @@ public class CountTraceSize {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    // static methods
-    public static int getSlabClass(int size) {
-        int low = 0;
-        int high = SLAB_CLASSES.length;
-        while (low < high) {
-            int mid = (low + high) / 2;
-            if (SLAB_CLASSES[mid] == size) {
-                return SLAB_CLASSES[mid];
-            } else if (size < SLAB_CLASSES[mid]) {
-                high = mid;
-            } else {
-                low = mid + 1;
-            }
-        }       
-        return low < SLAB_CLASSES.length ? SLAB_CLASSES[low] : SLAB_CLASSES[SLAB_CLASSES.length - 1];
     }
 
     // class methods

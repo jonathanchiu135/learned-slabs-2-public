@@ -66,9 +66,11 @@ public class RequestCountAllocFuture {
     // static variables: are 15 slab classes for now
     public static int[] SLAB_CLASSES = { 64, 128, 256, 512, 1024, 2048, 4096, 8192, 
         16384, 32768, 65536, 131072, 262144, 524288, 1048576};
-    public static int[] SLAB_COUNTS = { 16, 8, 8, 4, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1 };
-    // public static int LINES_READ_PER_CHUNK = 540000;
-    public static int LINES_READ_PER_CHUNK = 4218;
+    // public static int[] SLAB_COUNTS = { 16, 8, 8, 4, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1 };
+    public static int[] SLAB_COUNTS = { 4000, 4000, 4000, 4000, 4000, 4000, 
+        4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000 };
+    public static int LINES_READ_PER_CHUNK = 540000;
+    // public static int LINES_READ_PER_CHUNK = 4218;
     
     static int SLAB_SIZE = 1048576;
     static int THRESHOLD_MULTIPLIER = 3;
@@ -195,7 +197,7 @@ public class RequestCountAllocFuture {
 
                                                
             // write the hit rate over the last epoch to file
-            this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
+            // this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
             // if (!moved.equals("")) {
             //     this.writer.write(String.format("moved slab from %d to %d\n", min, max));
             // }
