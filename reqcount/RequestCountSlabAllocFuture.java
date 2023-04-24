@@ -150,19 +150,23 @@ public class RequestCountSlabAllocFuture {
         this.SLAB_COUNTS_MAP.put(min, this.SLAB_COUNTS_MAP.get(min) - 1);
     }
 
-    public int getMinUtil(int sc) {
-        LinkedHashMap<Long, Integer> currLRU = this.LRUPerSC.get(sc);
-        int numSlabs = SLAB_COUNTS_MAP.get(sc);
+    public float getMinSlabUtil(ArrayList<Integer> sortedValues, int sc) {
+        // LinkedHashMap<Long, Integer> currLRU = this.LRUPerSC.get(sc);
+        // Iterator<Integer> iter = currLRU.values().iterator();
 
-        int minUtil = Integer.MAX_VALUE;
-        Iterator<Integer> iter = currLRU.values().iterator();
+        Iterator<Integer> iter = sortedValues.iterator();
+
+        int numSlabs = SLAB_COUNTS_MAP.get(sc);
+        if (numSlabs == 0) return -1;
+
+        long minUtil = Long.MAX_VALUE;
         boolean done = false;
         /* loop through slabs and calculate utilization for each */
         for (int i = 0; i < numSlabs; i++) {
-            int currSlabUtil = 0;
+            long currSlabUtil = 0;
             for (int j = 0; j < SLAB_SIZE / sc; j++) {
                 if (iter.hasNext()) {
-                    currSlabUtil += iter.next();
+                    currSlabUtil += (long) iter.next();
                 } else {
                     done = true;
                     break;
@@ -175,35 +179,110 @@ public class RequestCountSlabAllocFuture {
                 break;
             }
         }
-        return minUtil;
+        return (float) minUtil;
+    }   
+
+    public float getNextSlabUtil(ArrayList<Integer> sortedValues, int sc) {
+        int numSlabs = SLAB_COUNTS_MAP.get(sc);
+
+        // LinkedHashMap<Long, Integer> currLRU = this.LRUPerSC.get(sc);
+        // Iterator<Integer> iter = currLRU.values().iterator();
+
+        Iterator<Integer> iter = sortedValues.iterator();
+        
+        boolean done = false;
+        /* loop through first (SLAB_SIZE/sc) * numSlabs items; basically discard */
+        for (int i = 0; i < numSlabs; i++) {
+            for (int j = 0; j < SLAB_SIZE / sc; j++) {
+                if (iter.hasNext()) { 
+                    iter.next(); 
+                } else {
+                    done = true;
+                    break;
+                }
+            }
+            if (done) break;
+        }
+
+        /* loop through one more slab and return the util of this slab */
+        if (done) {
+            /* do not exist any more items in the slab class */
+            return 0;
+        } 
+
+        long nextUtil = 0;
+        for (int j = 0; j < SLAB_SIZE / sc; j++) {
+            if (iter.hasNext()) { 
+                nextUtil += iter.next(); 
+            } else { 
+                break;
+            }
+        }
+        return (float) nextUtil;
     }
 
     public void reviewEpochAndRealloc() {
         try {
+            /* sort each of the reqcounts */
+            HashMap<Integer, ArrayList<Integer>> sortedReqcounts 
+                = new HashMap<>();
+            for (int sc : SLAB_CLASSES) {
+                ArrayList<Integer> sortedValues = new ArrayList<>(this.LRUPerSC.get(sc).values());
+                Collections.sort(sortedValues);
+                sortedReqcounts.put(sc, sortedValues);
+            }
+            
             /* find the slab with the lowest utilization, and lowest-utilization 
              * slab in a slab class, with the highest utilization 
             */
-            int minUtil = Integer.MAX_VALUE;
+            float minUtil = Long.MAX_VALUE;
             int minUtilSC = -1;
-            int highestLastUtil = -1;
-            int highestLastUtilSC = -1;
-
             for (int sc : SLAB_CLASSES) {
-                int currMinUtil = getMinUtil(sc);
+                float currMinUtil = getMinSlabUtil(sortedReqcounts.get(sc), sc);
+                if (currMinUtil == -1) continue;
 
                 if (currMinUtil < minUtil) {
                     minUtil = currMinUtil;
                     minUtilSC = sc;
-                } else if (currMinUtil > highestLastUtil) {
-                    highestLastUtil = currMinUtil;
+                }
+            }
+
+            float highestLastUtil = -1;
+            int highestLastUtilSC = -1;
+            HashMap<Integer, Float> highestNextSlabs = new HashMap<>();
+            for (int sc : SLAB_CLASSES) {
+                float currLastUtil = getNextSlabUtil(sortedReqcounts.get(sc), sc);
+                /* if lastUtil is 0, then will not benefit from move anyways */
+                highestNextSlabs.put(sc, currLastUtil);
+
+                if (currLastUtil == 0) continue;
+
+                if (currLastUtil > highestLastUtil) {
+                    highestLastUtil = currLastUtil;
                     highestLastUtilSC = sc;
                 }
             }
 
+            // long highestLastUtil = -1;
+            // int highestLastUtilSC = -1;
+
+            // for (int sc : SLAB_CLASSES) {
+            //     long currMinUtil = getMinUtil(sc);
+            //     if (currMinUtil == -1) continue;
+
+            //     if (currMinUtil < minUtil) {
+            //         minUtil = currMinUtil;
+            //         minUtilSC = sc;
+            //     } else if (currMinUtil > highestLastUtil) {
+            //         highestLastUtil = currMinUtil;
+            //         highestLastUtilSC = sc;
+            //     }
+            // }
+
             // move a slab from min to max slab class
             String moved = "";
-            if (minUtil != Integer.MAX_VALUE
-                && highestLastUtil != -1
+            if (minUtilSC != -1
+                && highestLastUtilSC != -1
                 && minUtilSC != highestLastUtilSC
                 && this.SLAB_COUNTS_MAP.get(minUtilSC) != 0) {
                 moveSlab(minUtilSC, highestLastUtilSC);
@@ -214,13 +293,12 @@ public class RequestCountSlabAllocFuture {
 
                                 
             // write the hit rate over the last epoch to file
-            // this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
-            // if (!moved.equals("")) {
-            //     this.writer.write(String.format("moved slab from %d to %d\n", min, max));
-            // }
-            // this.writer.write("requests counts: " + this.numRequestsSC.toString() + "\n");
-            // this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
-            // this.writer.write("\n");
+            this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
+            if (!moved.equals("")) this.writer.write(String.format("moved slab from %d (%f) to %d (%f)\n", minUtilSC, minUtil, highestLastUtilSC, highestLastUtil));
+            // // this.writer.write("requests counts: " + this.numRequestsSC.toString() + "\n");
+            this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
+            this.writer.write("highest nexts: " + highestNextSlabs.toString() + "\n");
+            this.writer.write("\n");
             
             // reset epoch data structures
 
@@ -252,8 +330,10 @@ public class RequestCountSlabAllocFuture {
 
     // example how to run
     public static void main(String[] args) throws Exception {
-        RequestCountAllocFuture alloc = new RequestCountAllocFuture("/mntData2/jason/cphy/w01.oracleGeneral.bin", 
-                "./reqcount_results/trash.txt"); 
+        RequestCountSlabAllocFuture alloc = new RequestCountSlabAllocFuture("/mntData2/jason/cphy/w01.oracleGeneral.bin", 
+                "./reqcount_slab_results/trash4.txt"); 
+                // "./reqcount_slab_results/w01_alloc.txt"); 
+
         System.out.println(alloc.processTrace());
     }
 }

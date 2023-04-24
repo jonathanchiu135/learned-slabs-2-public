@@ -75,11 +75,11 @@ public class RequestCountDriver {
     }
     public static void main(String[] args) {
         try {
-            String overallRes = "./reqcount_slab_results/results-slab-1.txt";
+            String overallRes = "./reqcount_results/overall-results-slab-nothreshold-min2.txt";
             // String overallRes = "./reqcount_results/trash2.txt";
             BufferedWriter overallWriter = new BufferedWriter(new FileWriter(overallRes));
             // int[] thresholds = new int[] {-1, 0, 1, 2, 3, 4, 5, 10, 50};
-            int[] epoch_lengths = new int[] { -1, 1080000, 540000 };
+            int[] epoch_lengths = new int[] { -1, 1080000, 540000, 270000 };
             // int[] epoch_lengths = new int[] { -1, 4218, 2109, 1054, 527 };
             // int[] epoch_lengths = new int[] { -1, 132 };
             // int[] epoch_lengths = new int[] { -1, 1080000, 540000 };

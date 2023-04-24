@@ -266,15 +266,15 @@ public class RequestCountAlloc {
             }   
             
             // write the hit rate over the last epoch to file
-            // this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
-            // if (!moved.equals("")) {
-            //     this.writer.write(String.format("moved slab from %d to %d\n", min, max));
-            // }
-            // this.writer.write("requests counts: " + this.numRequestsSC.toString() + "\n");
-            // this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
+            this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
+            if (!moved.equals("")) {
+                this.writer.write(String.format("moved slab from %d to %d\n", min, max));
+            }
+            this.writer.write("requests counts: " + this.numRequestsSC.toString() + "\n");
+            this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
             // this.writer.write(String.format("epoch hitrate: %f\n", (float) this.epochhits / (float) LINES_READ_PER_CHUNK ));
             // this.writer.write(String.format("lifetime hitrate: %f\n", (float) this.lifetimehits / (float) this.t));    
-            // this.writer.write("\n");
+            this.writer.write("\n");
 
             // reset epoch data structures
             this.epochhits = 0;
@@ -308,8 +308,8 @@ public class RequestCountAlloc {
 
     // example how to run
     public static void main(String[] args) throws Exception {
-        RequestCountAlloc alloc = new RequestCountAlloc("/mntData2/jason/cphy/w13.oracleGeneral.bin", 
-                "./reqcount_results/w13.reqcount.txt");
+        RequestCountAlloc alloc = new RequestCountAlloc("/mntData2/jason/cphy/w01.oracleGeneral.bin", 
+                "./reqcount_results/w01_alloc_2.txt");
         alloc.processTrace();
     }
 }

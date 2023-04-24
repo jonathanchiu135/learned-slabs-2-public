@@ -66,9 +66,9 @@ public class RequestCountAllocFuture {
     // static variables: are 15 slab classes for now
     public static int[] SLAB_CLASSES = { 64, 128, 256, 512, 1024, 2048, 4096, 8192, 
         16384, 32768, 65536, 131072, 262144, 524288, 1048576};
-    // public static int[] SLAB_COUNTS = { 16, 8, 8, 4, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1 };
-    public static int[] SLAB_COUNTS = { 4000, 4000, 4000, 4000, 4000, 4000, 
-        4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000 };
+    public static int[] SLAB_COUNTS = { 16, 8, 8, 4, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1 };
+    // public static int[] SLAB_COUNTS = { 4000, 4000, 4000, 4000, 4000, 4000, 
+    //     4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000 };
     public static int LINES_READ_PER_CHUNK = 540000;
     // public static int LINES_READ_PER_CHUNK = 4218;
     
@@ -160,12 +160,14 @@ public class RequestCountAllocFuture {
 
     public void reviewEpochAndRealloc() {
         try {
-            // calculate the min SC (where the SLAB_COUNTS is still > 0) and max SC
+            /* calculate the min SC (where the SLAB_COUNTS is still > 0, and 
+                taking from sc with the fewest slabs if equal) and max SC */
             int min = -1;
+            int minReqCount = Integer.MAX_VALUE;
             int minNumSlabs = -1;
+
             int max = -1;
             int maxReqCount = 0;
-            int minReqCount = Integer.MAX_VALUE;
 
             for (int sc : SLAB_CLASSES) {
                 if (this.numRequestsSC.get(sc) >= maxReqCount) {
@@ -173,8 +175,11 @@ public class RequestCountAllocFuture {
                     maxReqCount = numRequestsSC.get(sc);
                 } 
                 if (numRequestsSC.get(sc) <= minReqCount 
-                    && this.SLAB_COUNTS_MAP.get(sc) > minNumSlabs
-                    && this.SLAB_COUNTS_MAP.get(sc) > 0) {
+                    && this.SLAB_COUNTS_MAP.get(sc) > 2) {
+                    if (numRequestsSC.get(sc) == minReqCount 
+                        && this.SLAB_COUNTS_MAP.get(sc) > minNumSlabs) {
+                        continue;
+                    }
                     min = sc;
                     minReqCount = numRequestsSC.get(sc);
                     minNumSlabs = this.SLAB_COUNTS_MAP.get(sc);
@@ -183,10 +188,10 @@ public class RequestCountAllocFuture {
 
             // move a slab from min to max slab class
             String moved = "";
-            if (min != -1 && min != max 
-                && this.numRequestsSC.get(min) * THRESHOLD_MULTIPLIER 
-                    < this.numRequestsSC.get(max)) {
-            // if (min != -1 && min != max) {
+            // if (min != -1 && max != -1 && min != max 
+            //     && this.numRequestsSC.get(min) * THRESHOLD_MULTIPLIER 
+            //         < this.numRequestsSC.get(max)) {
+            if (min != -1 && min != max) {
                 if (this.SLAB_COUNTS_MAP.get(min) != 0) {
                     moveSlab(min, max);
                     moved = " (moved)";
@@ -197,13 +202,13 @@ public class RequestCountAllocFuture {
 
                                                
             // write the hit rate over the last epoch to file
-            // this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
-            // if (!moved.equals("")) {
-            //     this.writer.write(String.format("moved slab from %d to %d\n", min, max));
-            // }
-            // this.writer.write("requests counts: " + this.numRequestsSC.toString() + "\n");
-            // this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
-            // this.writer.write("\n");
+            this.writer.write("epoch " + String.valueOf(this.t / LINES_READ_PER_CHUNK) + moved + "\n");
+            if (!moved.equals("")) {
+                this.writer.write(String.format("moved slab from %d to %d\n", min, max));
+            }
+            this.writer.write("requests counts: " + this.numRequestsSC.toString() + "\n");
+            this.writer.write("slab counts: " + this.SLAB_COUNTS_MAP.toString() + "\n");
+            this.writer.write("\n");
             
             // reset epoch data structures
             this.numRequestsSC = new HashMap<Integer, Integer>();
@@ -235,7 +240,7 @@ public class RequestCountAllocFuture {
     // example how to run
     public static void main(String[] args) throws Exception {
         RequestCountAllocFuture alloc = new RequestCountAllocFuture("/mntData2/jason/cphy/w01.oracleGeneral.bin", 
-                "./reqcount_results/trash.txt"); 
+                "./reqcount_slab_results/w01_alloc_bugfix.txt"); 
         System.out.println(alloc.processTrace());
     }
 }

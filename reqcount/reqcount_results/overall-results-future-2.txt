@@ -58,3 +58,4 @@ hitrates per trace:
 
 
 set cache size as 10% of the total ize fo trace (sumu the sizes of obejcts)
+ss
